@@ -263,6 +263,8 @@ def _expect_error(expected: type[Exception], action: Any, description: str) -> N
 
 def main() -> None:
     """Exercise every public item operation with multiple users and characters."""
+    users_file_path = DATA_PATH / "Users.json"
+    users_file_backup = users_file_path.read_bytes()
     print("[1/7] Create test users and characters")
     users = {
         "gm": ("items_test_gm", "gm_password", "gm"),
@@ -489,6 +491,7 @@ def main() -> None:
                 pass
         for user_id in user_ids.values():
             Users.deleteUser(Users.AdminPassword, user_id)
+        users_file_path.write_bytes(users_file_backup)
 
 
 if __name__ == "__main__":

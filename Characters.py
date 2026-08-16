@@ -40,6 +40,13 @@ def _user_folder_name(user_id: str) -> str:
 def _character_id(folder_name: str) -> str:
     return f"Charakter_{folder_name}"
 
+
+def _validate_folder_name(folder_name: str) -> None:
+    if not isinstance(folder_name, str) or not folder_name.strip():
+        raise ValueError("folder_name must be a non-empty string")
+    if folder_name in {".", ".."} or Path(folder_name).name != folder_name:
+        raise ValueError("folder_name must be a single path component")
+
 def _characters_in_user_folder(user_path: Path) -> list[str]:
     characters = []
     for folder in user_path.iterdir():
@@ -62,6 +69,7 @@ def createCharacter(
     """Create a new character in the caller's own user folder. Any validated user may do this."""
     _require_login(user_id, username, password_hash)
 
+    _validate_folder_name(folder_name)
     if not isinstance(display_name, str) or not display_name.strip():
         raise ValueError("display_name must be a non-empty string")
 
@@ -291,6 +299,8 @@ def editKnownStatusEffects(
 
 def main() -> None:
     """Create a GM and a Player user with characters, exercise every access path, then clean up."""
+    users_file_path = DATA_PATH / "Users.json"
+    users_file_backup = users_file_path.read_bytes()
     gm_user_id = Users.createUser(TEST_ADMIN_PASSWORD, "test_gm", "gm_password_hash", "gm")
     player_user_id = Users.createUser(TEST_ADMIN_PASSWORD, "test_player", "player_password_hash", "player")
     created_characters: list[tuple[str, str, str, str]] = []  # (owner_id, username, pw, char_id)
@@ -463,6 +473,7 @@ def main() -> None:
                 pass  # already deleted during the test
         Users.deleteUser(TEST_ADMIN_PASSWORD, player_user_id)
         Users.deleteUser(TEST_ADMIN_PASSWORD, gm_user_id)
+        users_file_path.write_bytes(users_file_backup)
 
 if __name__ == "__main__":
     main()

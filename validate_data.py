@@ -5,13 +5,12 @@ from pathlib import Path
 
 ALLOWED_ROLES = {"gm", "player"}
 
-def TestUsers(executable_path: Path) -> None:
+def TestUsers(executable_path: Path) -> dict:
     #test users.json each entry id hast to start with User_ there has to be a username and a password_hash and a role. The role can bo GM ore Player.
     users_file_path = executable_path / "Users.json"
     if not users_file_path.exists():
         raise FileNotFoundError(f"Users.json not found in {executable_path}")
     with open(users_file_path, "r", encoding="utf-8") as f:
-        global users_data
         users_data = json.load(f)
     next_id = users_data.get("next_id")
     if isinstance(next_id, bool) or not isinstance(next_id, int) or next_id < 1:
@@ -29,6 +28,7 @@ def TestUsers(executable_path: Path) -> None:
             raise ValueError(f"User {user_id} does not have a role")
         if user["role"] not in ALLOWED_ROLES:
             raise ValueError(f"User {user_id} has an invalid role {user['role']}")
+    return users_data
 
 def TestForStatSheetTemplate(executable_path: Path) -> None:
     #test for stat_sheet_template.json if it exists and is a valid json file
@@ -41,7 +41,7 @@ def TestForStatSheetTemplate(executable_path: Path) -> None:
         except json.JSONDecodeError as e:
             raise ValueError(f"stat_sheet_template.json is not a valid json file: {e}")
 
-def TestForGlobalDocuments(executable_path: Path) -> None:
+def TestForGlobalDocuments(executable_path: Path) -> tuple[dict, dict, dict, dict]:
     #look for the Global folder in executable path it has to exist
     #Look for the dokuments Items.json, Skills.json, SpellEffects.json, StatusEffekts.json. They have to be valid json files.
     global_folder_path = executable_path / "Global"
@@ -64,7 +64,6 @@ def TestForGlobalDocuments(executable_path: Path) -> None:
     #no number in the stat_bonus can be grater than 10 or less than -10.
     items_file_path = global_folder_path / "Items.json"
     with open(items_file_path, "r", encoding="utf-8") as f:
-        global items_data
         items_data = json.load(f)
     #users_file_path = executable_path / "Users.json"
     #with open(users_file_path, "r", encoding="utf-8") as f:
@@ -107,7 +106,6 @@ def TestForGlobalDocuments(executable_path: Path) -> None:
     
     skills_file_path = global_folder_path / "Skills.json"
     with open(skills_file_path, "r", encoding="utf-8") as f:
-        global skills_data
         skills_data = json.load(f)
 
     for skill_id, skill in skills_data.items():
@@ -149,7 +147,6 @@ def TestForGlobalDocuments(executable_path: Path) -> None:
 
     spellEffekt_file_path = global_folder_path / "SpellEffects.json"
     with open(spellEffekt_file_path, "r", encoding="utf-8") as f:
-        global spelleffekt_data
         spelleffekt_data = json.load(f)
 
     for spelleffekt_id, spelleffekt in spelleffekt_data.items():
@@ -189,7 +186,6 @@ def TestForGlobalDocuments(executable_path: Path) -> None:
 
     statusEffekt_file_path = global_folder_path / "StatusEffekts.json"
     with open(statusEffekt_file_path, "r", encoding="utf-8") as f:
-        global statusEffekt_data
         statusEffekt_data = json.load(f)
 
     for statusEffekt_id, statusEffekt in statusEffekt_data.items():
@@ -210,15 +206,21 @@ def TestForGlobalDocuments(executable_path: Path) -> None:
         for talent_name, value in statusEffekt.get("talent_bonus", {}).items():
             if value < -10 or value > 10:
                 raise ValueError(f"StatusEffekt {statusEffekt_id} has an invalid talent bonus '{talent_name}': {value}")
+    return items_data, skills_data, spelleffekt_data, statusEffekt_data
 
-def TestForUserFolder(executable_path: Path) -> None:
+def TestForUserFolder(
+    executable_path: Path,
+    users_data: dict,
+    items_data: dict,
+    skills_data: dict,
+    spelleffekt_data: dict,
+    statusEffekt_data: dict,
+) -> None:
     #look in users.json, any kay has to have a folder in the User folder. The name is "User_Default_0" => "Default_0" is the folder name.
     #if the folder Contains folders, the folders have to contain a StatSheet.json a Inventory.json a Charakter.json and a Documents Folder.
     #all .json files have to be vallid Json.
 
-    global found_Characters
     found_Characters = []
-    global needed_Characters
     needed_Characters = []
 
     userFolder_file_path = executable_path / "User"
@@ -320,13 +322,13 @@ def TestForUserFolder(executable_path: Path) -> None:
 
             with open(inventory_file_path, "r", encoding="utf-8") as f:
                 inventory_data = json.load(f)
+            with open(stat_sheet_file_path, "r", encoding="utf-8") as f:
+                stat_sheet_data = json.load(f)
             for item_id in inventory_data:
                 if item_id not in items_data:
                     raise ValueError(f"Inventory.json in {folder_path} has an item id {item_id} that does not exist in Items.json")
                 if items_data[item_id]["owner"] != character_data["ID"]:
                     raise ValueError(f"Inventory.json in {folder_path} has an item id {item_id} that has an owner {items_data[item_id]['owner']} that does not match the character id {character_data['ID']}")
-                with open(stat_sheet_file_path, "r", encoding="utf-8") as f:
-                    stat_sheet_data = json.load(f)
                 equipped_items = stat_sheet_data.get("equipped_items", {}).get("rows", [])
                 if items_data[item_id]["equipped"]:
                     if not any(equipped_item.get("ID") == item_id for equipped_item in equipped_items):
@@ -341,8 +343,6 @@ def TestForUserFolder(executable_path: Path) -> None:
             #the ID of active_spell_effects has to be in SpellEffects.json.
             #the ID of active_status_effects has to be in StatusEffekts.json.
 
-            with open(stat_sheet_file_path, "r", encoding="utf-8") as f:
-                stat_sheet_data = json.load(f)
             if "equipped_items" not in stat_sheet_data:
                 raise ValueError(f"StatSheet.json in {folder_path} does not have an 'equipped_items' field")
             if "learned_abilities" not in stat_sheet_data:
@@ -384,10 +384,10 @@ def TestForUserFolder(executable_path: Path) -> None:
 
 def main() -> None:
     executable_path = Path(__file__).parent / "data"
-    TestUsers(executable_path)
+    users_data = TestUsers(executable_path)
     TestForStatSheetTemplate(executable_path)
-    TestForGlobalDocuments(executable_path)
-    TestForUserFolder(executable_path)
+    resources = TestForGlobalDocuments(executable_path)
+    TestForUserFolder(executable_path, users_data, *resources)
 
 if __name__ == "__main__":
     main()

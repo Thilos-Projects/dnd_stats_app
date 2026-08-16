@@ -22,6 +22,11 @@ def _save_users(users_data: dict) -> None:
         json.dump(users_data, file, indent=4, ensure_ascii=False)
         file.write("\n")
 
+
+def _require_non_empty_text(value: str, field_name: str) -> None:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{field_name} must be a non-empty string")
+
 def createUser(adminpass: str, username: str, password_Hash: str, role: str) -> str:
     # Create a new user with the given username and password
     # Save the user data to Users.json
@@ -31,6 +36,8 @@ def createUser(adminpass: str, username: str, password_Hash: str, role: str) -> 
     if adminpass != AdminPassword:
         raise ValueError("Invalid admin password")
 
+    _require_non_empty_text(username, "username")
+    _require_non_empty_text(password_Hash, "password_Hash")
     if role not in ALLOWED_ROLES:
         raise ValueError(f"Invalid role {role!r}; expected one of {sorted(ALLOWED_ROLES)}")
 
