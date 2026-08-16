@@ -1,0 +1,20 @@
+{
+  "Item_Demo_0": {
+    "name": "Demo",
+    "description": "Demo Item",
+    "owner": null,
+    "equipped": false,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": 0,
+      "Körperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    }
+  }
+}
