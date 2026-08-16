@@ -15,9 +15,7 @@ Der Ordner `ForeLaterUse/` wurde bei dieser Zusammenfassung ignoriert.
 ## Users.py — Benutzerverwaltung
 
 Verwaltet `data/Users.json` und die zugehörigen Benutzerordner unter `data/User/`.
-Benutzerverwaltungs-Operationen erfordern das globale Admin-Passwort (`Users.AdminPassword`, aktuell `"1234"`).
-Es gibt ausschließlich die Rollen `gm` und `player`; `gm` besitzt alle Managerrechte.
-`Users.json` enthält außerdem `next_id`, den persistenten Zähler für die nächste User-ID.
+Admin-Operationen erfordern das globale Admin-Passwort (`Users.AdminPassword`, aktuell `"1234"`).
 
 ### `createUser(adminpass: str, username: str, password_Hash: str, role: str) -> str`
 Legt einen neuen Benutzer an und erstellt seinen Ordner unter `data/User/<id ohne "User_">`.
@@ -25,9 +23,9 @@ Legt einen neuen Benutzer an und erstellt seinen Ordner unter `data/User/<id ohn
   - `adminpass` — muss `AdminPassword` entsprechen.
   - `username` — Anzeigename des Benutzers.
   - `password_Hash` — Passwort-Hash (wird 1:1 gespeichert, kein Hashing durch die Funktion).
-  - `role` — `"gm"` oder `"player"`.
+  - `role` — z. B. `"gm"`, `"admin"`, `"player"`.
 - **Rückgabe:** neue Benutzer-ID im Format `"User_<n>"`.
-- **Fehler:** `ValueError`, wenn `adminpass` falsch ist oder die Rolle ungültig ist.
+- **Fehler:** `ValueError`, wenn `adminpass` falsch ist.
 
 ### `hasUser(userId: str) -> bool`
 Prüft, ob eine Benutzer-ID in `Users.json` existiert.
@@ -38,7 +36,7 @@ Listet alle Benutzer-IDs.
 - **Fehler:** `ValueError` bei falschem `adminpass`.
 
 ### `getUserRole(userId: str) -> str | None`
-Liefert die Rolle (`"gm"` oder `"player"`) eines Benutzers oder `None`, wenn er nicht existiert.
+Liefert die Rolle (`"gm"`, `"admin"`, `"player"`, …) eines Benutzers oder `None`, wenn er nicht existiert.
 
 ### `loginTestUser(userId: str, username: str, password_Hash: str) -> bool`
 Prüft Zugangsdaten (Benutzer-ID + Username + Passwort-Hash müssen übereinstimmen).
@@ -54,7 +52,7 @@ Entfernt den Benutzer aus `Users.json` und löscht seinen kompletten Ordner samt
 
 Verwaltet Charaktere unter `data/User/<benutzerordner>/<charakterordner>/`. Jede Funktion
 prüft Login-Daten selbst (`user_id`, `username`, `password_hash`) über `Users.loginTestUser`.
-Die Rolle `gm` gilt als Managerrolle mit erweiterten Rechten.
+Rollen `gm`/`admin` gelten als "Manager" mit erweiterten Rechten.
 
 ### `createCharacter(user_id, username, password_hash, folder_name, display_name) -> str`
 Legt einen neuen Charakter im **eigenen** Benutzerordner an (jeder validierte Benutzer darf das).
@@ -69,7 +67,7 @@ einen `documents`-Unterordner.
 
 ### `deleteCharacter(user_id, username, password_hash, character_id) -> None`
 Löscht einen Charakterordner komplett.
-- **Rechte:** Eigentümer des Charakters ODER GM.
+- **Rechte:** Eigentümer des Charakters ODER GM/Admin.
 - **Fehler:** `PermissionError` bei fehlenden Rechten/ungültigem Login; `ValueError`, wenn
   `character_id` nicht existiert.
 
@@ -78,53 +76,53 @@ Listet alle Charakter-IDs im eigenen Benutzerordner des Aufrufers.
 
 ### `listUserCharacters(user_id, username, password_hash, target_user_id) -> list[str]`
 Listet Charakter-IDs eines anderen Benutzers.
-- **Rechte:** nur wenn `target_user_id == user_id`, oder Aufrufer ist GM.
+- **Rechte:** nur wenn `target_user_id == user_id`, oder Aufrufer ist GM/Admin.
 - **Fehler:** `PermissionError`; `ValueError`, wenn `target_user_id` nicht existiert.
 
 ### `listAllCharacters(user_id, username, password_hash) -> list[str]`
 Listet alle Charakter-IDs aller Benutzer.
-- **Rechte:** nur GM. Sonst `PermissionError`.
+- **Rechte:** nur GM/Admin. Sonst `PermissionError`.
 
 ### `getKnownCharacters(user_id, username, password_hash, character_id) -> list[str]`
 Liest die Liste `known_Charakters` eines Charakters.
-- **Rechte:** Eigentümer des Charakters ODER GM.
+- **Rechte:** Eigentümer des Charakters ODER GM/Admin.
 - **Fehler:** `PermissionError` bei fehlenden Rechten/ungültigem Login; `ValueError`, wenn
   `character_id` nicht existiert.
 
 ### `getKnownSkills(user_id, username, password_hash, character_id) -> list[str]`
 Liest die Liste `known_Skills` eines Charakters.
-- **Rechte:** Eigentümer des Charakters ODER GM.
+- **Rechte:** Eigentümer des Charakters ODER GM/Admin.
 - **Fehler:** wie bei `getKnownCharacters`.
 
 ### `getKnownSpellEffects(user_id, username, password_hash, character_id) -> list[str]`
 Liest die Liste `known_SpellEffects` eines Charakters.
-- **Rechte:** Eigentümer des Charakters ODER GM.
+- **Rechte:** Eigentümer des Charakters ODER GM/Admin.
 - **Fehler:** wie bei `getKnownCharacters`.
 
 ### `getKnownStatusEffects(user_id, username, password_hash, character_id) -> list[str]`
 Liest die Liste `known_StatusEffects` eines Charakters.
-- **Rechte:** Eigentümer des Charakters ODER GM.
+- **Rechte:** Eigentümer des Charakters ODER GM/Admin.
 - **Fehler:** wie bei `getKnownCharacters`.
 
 ### `editKnownCharacters(user_id, username, password_hash, character_id, known_characters: list[str]) -> None`
 Ersetzt die Liste `known_Charakters` eines Charakters (Referenzen auf andere existierende Charaktere).
-- **Rechte:** nur GM.
+- **Rechte:** nur GM/Admin.
 - **Fehler:** `PermissionError`; `ValueError` bei ungültiger Liste oder unbekannter Charakter-ID
   in `known_characters`.
 
 ### `editKnownSkills(user_id, username, password_hash, character_id, known_skills: list[str]) -> None`
 Ersetzt `known_Skills`. Jede ID muss mit `"Skill_"` beginnen und in `data/Global/Skills.json` existieren.
-- **Rechte:** nur GM.
+- **Rechte:** nur GM/Admin.
 
 ### `editKnownSpellEffects(user_id, username, password_hash, character_id, known_spell_effects: list[str]) -> None`
 Ersetzt `known_SpellEffects`. IDs müssen mit `"SpellEffect_"` beginnen und in
 `data/Global/SpellEffects.json` existieren.
-- **Rechte:** nur GM.
+- **Rechte:** nur GM/Admin.
 
 ### `editKnownStatusEffects(user_id, username, password_hash, character_id, known_status_effects: list[str]) -> None`
 Ersetzt `known_StatusEffects`. IDs müssen mit `"StatusEffekt_"` beginnen und in
 `data/Global/StatusEffekts.json` existieren.
-- **Rechte:** nur GM.
+- **Rechte:** nur GM/Admin.
 
 ---
 
@@ -141,110 +139,171 @@ Erstellt ein neues, noch niemandem zugewiesenes Item.
   - `stat_bonus` — optionales Dict mit genau den Feldern `Mut, Klugheit, Intuition, Charisma,
     Fingerfertigkeit, Gewandheit, Konstitution, Körperkraft, MagieSpeicher, MagieRegeneration`,
     jeweils ganzzahlig zwischen -10 und 10. Fehlt es, werden alle Werte auf 0 gesetzt.
-- **Rechte:** nur GM.
+- **Rechte:** nur GM/Admin.
 - **Rückgabe:** neue Item-ID, Format `"Item_<n>"`.
 - **Fehler:** `PermissionError`; `ValueError` bei ungültigem Namen/Beschreibung/`stat_bonus`.
 
 ### `deleteItem(user_id, username, password_hash, item_id) -> None`
 Löscht ein Item dauerhaft. Nur möglich, wenn das Item **keinem** Charakter zugewiesen ist.
-- **Rechte:** nur GM.
+- **Rechte:** nur GM/Admin.
 - **Fehler:** `PermissionError`; `ValueError`, wenn Item nicht existiert oder noch zugewiesen ist.
 
 ### `assignItemToCharacter(user_id, username, password_hash, item_id, character_id) -> None`
 Weist ein noch nicht zugewiesenes Item einem Charakter-Inventar zu.
-- **Rechte:** nur GM.
+- **Rechte:** nur GM/Admin.
 - **Fehler:** `PermissionError`; `ValueError`, wenn Item bereits zugewiesen ist, Charakter nicht
   existiert oder Item schon im Inventar liegt.
 
 ### `equipItem(user_id, username, password_hash, item_id, character_id) -> None`
 Markiert ein zugewiesenes Item als ausgerüstet und trägt es in `StatSheet.json` unter
 `equipped_items.rows` ein (idempotent — mehrfacher Aufruf ist unschädlich).
-- **Rechte:** Charaktereigentümer ODER GM.
+- **Rechte:** Charaktereigentümer ODER GM/Admin.
 - **Fehler:** `PermissionError`; `ValueError`, wenn Item nicht diesem Charakter gehört oder nicht
   im Inventar liegt.
 
 ### `unequipItem(user_id, username, password_hash, item_id, character_id) -> None`
 Entfernt ein Item aus `equipped_items.rows` und setzt das Flag `equipped` zurück.
-- **Rechte:** Charaktereigentümer ODER GM.
+- **Rechte:** Charaktereigentümer ODER GM/Admin.
 - **Fehler:** `PermissionError`; `ValueError`, wenn Item nicht diesem Charakter gehört.
 
 ### `removeItemFromCharacter(user_id, username, password_hash, item_id, character_id) -> None`
 Entfernt ein **nicht ausgerüstetes** Item aus dem Inventar eines Charakters (Item wird wieder
 "herrenlos", nicht gelöscht).
-- **Rechte:** nur GM.
+- **Rechte:** nur GM/Admin.
 - **Fehler:** `PermissionError`; `ValueError`, wenn Item nicht diesem Charakter gehört, noch
   ausgerüstet ist, oder nicht im Inventar liegt.
 
 ### `moveItemBetweenCharacters(user_id, username, password_hash, item_id, from_character_id, to_character_id) -> None`
 Verschiebt ein nicht ausgerüstetes Item von einem Charakter zu einem anderen — nur wenn der
 Quell-Charakter den Ziel-Charakter in seiner `known_Charakters`-Liste kennt.
-- **Rechte:** Eigentümer des Quell-Charakters ODER GM.
+- **Rechte:** Eigentümer des Quell-Charakters ODER GM/Admin.
 - **Fehler:** `ValueError` (gleiche Quelle/Ziel, Item nicht zugewiesen/ausgerüstet, Item fehlt im
   Quell-Inventar, Item bereits im Ziel-Inventar); `PermissionError` (Quelle kennt Ziel nicht /
   ungültiger Login / keine Berechtigung).
 
+### `ListAllItems(user_id, username, password_hash) -> dict[str, dict[str, Any]]`
+Listet alle Items, die der Nutzer sehen darf.
+- **Rechte:** GM/Admin sieht alle Items; ein Spieler sieht nur Items, deren Besitzer-Charakter
+  ihm selbst gehört (unzugewiesene Items sind für Spieler nicht sichtbar).
+- **Fehler:** `PermissionError` bei ungültigem Login.
+
 ---
 
-## Skills.py — Globale Skills
+## Skills.py — globale Skills
 
-Skills werden ohne Nutzerbezug in `data/Global/Skills.json` gespeichert. Eine aktive
-Zuweisung wird als `{"ID": "Skill_..."}` in `StatSheet.json` unter
-`learned_abilities.rows` gespeichert.
+Verwaltet globale Skills in `data/Global/Skills.json` und ihre Zuweisung zu `known_Skills` der
+Charaktere.
 
 ### `createSkill(user_id, username, password_hash, name, beschreibung, stat_bonus=None, talent_bonus=None, skill_bonus=None, alters_anstieg=0) -> str`
-Erstellt einen globalen Skill mit einer ID im Format `Skill_<n>`. Die drei Bonus-Dictionaries
-entsprechen dem bestehenden Schema und werden bei Auslassung mit Nullwerten gefüllt. Jeder
-Bonus liegt zwischen -10 und 10. Nur GM.
+Erstellt einen neuen Skill.
+- **Parameter:**
+  - `name` — nicht-leerer String.
+  - `beschreibung` — String (darf leer sein).
+  - `stat_bonus` — optionales Dict mit den Feldern `Mut, Klugheit, Intuition, Charisma,
+    Fingerfertigkeit, Gewandheit, Konstitution, Körperkraft`, jeweils ganzzahlig zwischen -10 und 10.
+    Fehlt es, werden alle Werte auf 0 gesetzt.
+  - `talent_bonus` — optionales Dict mit den Feldern `Körpertalent, Geseltschaftstalent,
+    Naturtalent, Wissenstalent, Handwerkstalent`, jeweils ganzzahlig zwischen -10 und 10.
+  - `skill_bonus` — optionales Dict über alle bekannten Skill-Namen (z. B. `Klettern`, `Singen`, …),
+    jeweils ganzzahlig zwischen -10 und 10.
+  - `alters_anstieg` — Ganzzahl, Standard `0`.
+- **Rechte:** nur GM/Admin.
+- **Fehler:** `PermissionError`; `ValueError` bei ungültigem Namen/Bonus-Dict/`alters_anstieg`.
 
 ### `deleteSkill(user_id, username, password_hash, skill_id) -> None`
-Löscht einen Skill, sofern er weder aktiv ist noch in einer `known_Skills`-Liste referenziert wird. Nur GM.
+Löscht einen Skill dauerhaft. Nur möglich, wenn kein Charakter ihn kennt.
+- **Rechte:** nur GM/Admin.
 
 ### `assignSkillToCharacter(user_id, username, password_hash, skill_id, character_id) -> None`
-Aktiviert einen Skill. GM darf jeden Charakter bearbeiten; Spieler dürfen nur eigene
-Charaktere bearbeiten und nur IDs aus `known_Skills` verwenden.
+Trägt einen Skill in `known_Skills` eines Charakters ein.
+- **Rechte:** nur GM/Admin.
 
 ### `removeSkillFromCharacter(user_id, username, password_hash, skill_id, character_id) -> None`
-Entfernt die aktive Skill-Zeile. Es gelten dieselben Rechte wie beim Hinzufügen.
+Entfernt einen Skill aus `known_Skills` eines Charakters.
+- **Rechte:** nur GM/Admin.
 
-## SpellEffects.py — Globale Zaubereffekte
+### `listAllSkills(user_id, username, password_hash) -> dict[str, dict]`
+Listet alle Skills, die der Nutzer sehen darf.
+- **Rechte:** GM/Admin sieht alle Skills; ein Spieler sieht nur Skills aus seiner
+  `known_Skills`-Liste.
+- **Fehler:** `PermissionError` bei ungültigem Login.
 
-SpellEffects werden ohne Nutzerbezug in `data/Global/SpellEffects.json` gespeichert. Aktive
-Einträge liegen in `StatSheet.json` unter `active_spell_effects.rows`.
+---
+
+## SpellEffects.py — globale Zaubereffekte
+
+Verwaltet globale Zaubereffekte in `data/Global/SpellEffects.json` und ihre Zuweisung zu
+`known_SpellEffects` der Charaktere.
 
 ### `createSpellEffect(user_id, username, password_hash, name, description, default_duration=0, default_time_to_death=0, stat_bonus=None, talent_bonus=None, skill_bonus=None) -> str`
-Erstellt einen globalen SpellEffect mit einer ID im Format `SpellEffect_<n>`. Das bestehende
-Schema wird beibehalten; Dauer und Zeit bis zum Tod sind nicht-negative Ganzzahlen und Bonuswerte
-liegen zwischen -10 und 10. Nur GM.
+Erstellt einen neuen Zaubereffekt.
+- **Parameter:**
+  - `name` — nicht-leerer String.
+  - `description` — String (darf leer sein).
+  - `default_duration`, `default_time_to_death` — nicht-negative Ganzzahlen, Standard `0`.
+  - `stat_bonus` — optionales Dict mit den Skill-Stat-Feldern plus `MagieSpeicher, MagieRegeneration`,
+    jeweils ganzzahlig zwischen -10 und 10.
+  - `talent_bonus` — optionales Dict wie bei `createSkill`.
+  - `skill_bonus` — optionales Dict wie bei `createSkill`.
+- **Rechte:** nur GM/Admin.
+- **Fehler:** `PermissionError`; `ValueError` bei ungültigem Namen/Bonus-Dict/Dauerwerten.
 
 ### `deleteSpellEffect(user_id, username, password_hash, spell_effect_id) -> None`
-Löscht einen nicht aktiven SpellEffect, der auch nicht in `known_SpellEffects` referenziert wird. Nur GM.
+Löscht einen Zaubereffekt dauerhaft. Nur möglich, wenn kein Charakter ihn kennt.
+- **Rechte:** nur GM/Admin.
 
 ### `assignSpellEffectToCharacter(user_id, username, password_hash, spell_effect_id, character_id) -> None`
-Aktiviert einen SpellEffect. Spieler dürfen nur eigene Charaktere und IDs aus `known_SpellEffects`
-verwenden; GM darf jeden Charakter bearbeiten.
+Trägt einen Zaubereffekt in `known_SpellEffects` eines Charakters ein.
+- **Rechte:** nur GM/Admin.
 
 ### `removeSpellEffectFromCharacter(user_id, username, password_hash, spell_effect_id, character_id) -> None`
-Entfernt einen aktiven SpellEffect. Es gelten dieselben Rechte wie beim Hinzufügen.
+Entfernt einen Zaubereffekt aus `known_SpellEffects` eines Charakters.
+- **Rechte:** nur GM/Admin.
 
-## Statuseffekts.py — Globale Statuseffekte
+### `listAllSpellEffects(user_id, username, password_hash) -> dict[str, dict]`
+Listet alle Zaubereffekte, die der Nutzer sehen darf.
+- **Rechte:** GM/Admin sieht alle Zaubereffekte; ein Spieler sieht nur Effekte aus seiner
+  `known_SpellEffects`-Liste.
+- **Fehler:** `PermissionError` bei ungültigem Login.
 
-StatusEffects werden ohne Nutzerbezug in `data/Global/StatusEffekts.json` gespeichert. Aktive
-Einträge liegen in `StatSheet.json` unter `active_status_effects.rows`.
+---
+
+## Statuseffekts.py — globale Statuseffekte
+
+Verwaltet globale Statuseffekte in `data/Global/StatusEffekts.json` und ihre Zuweisung zu
+`known_StatusEffects` der Charaktere.
 
 ### `createStatusEffect(user_id, username, password_hash, name, beschreibung, default_duration=0, default_time_to_death=0, stat_bonus=None, talent_bonus=None) -> str`
-Erstellt einen globalen StatusEffekt mit einer ID im Format `StatusEffekt_<n>`. Das bestehende
-Schema wird beibehalten; Dauer und Zeit bis zum Tod sind nicht-negative Ganzzahlen und Bonuswerte
-liegen zwischen -10 und 10. Nur GM.
+Erstellt einen neuen Statuseffekt.
+- **Parameter:**
+  - `name` — nicht-leerer String.
+  - `beschreibung` — String (darf leer sein).
+  - `default_duration`, `default_time_to_death` — nicht-negative Ganzzahlen, Standard `0`.
+  - `stat_bonus` — optionales Dict mit den Skill-Stat-Feldern plus `MagieSpeicher, MagieRegeneration`,
+    jeweils ganzzahlig zwischen -10 und 10.
+  - `talent_bonus` — optionales Dict wie bei `createSkill`.
+- **Rechte:** nur GM/Admin.
+- **Fehler:** `PermissionError`; `ValueError` bei ungültigem Namen/Bonus-Dict/Dauerwerten.
 
 ### `deleteStatusEffect(user_id, username, password_hash, status_effect_id) -> None`
-Löscht einen nicht aktiven StatusEffekt, der auch nicht in `known_StatusEffects` referenziert wird. Nur GM.
+Löscht einen Statuseffekt dauerhaft. Nur möglich, wenn kein Charakter ihn kennt.
+- **Rechte:** nur GM/Admin.
 
 ### `assignStatusEffectToCharacter(user_id, username, password_hash, status_effect_id, character_id) -> None`
-Aktiviert einen StatusEffekt. Spieler dürfen nur eigene Charaktere und IDs aus `known_StatusEffects`
-verwenden; GM darf jeden Charakter bearbeiten.
+Trägt einen Statuseffekt in `known_StatusEffects` eines Charakters ein.
+- **Rechte:** nur GM/Admin.
 
 ### `removeStatusEffectFromCharacter(user_id, username, password_hash, status_effect_id, character_id) -> None`
-Entfernt einen aktiven StatusEffekt. Es gelten dieselben Rechte wie beim Hinzufügen.
+Entfernt einen Statuseffekt aus `known_StatusEffects` eines Charakters.
+- **Rechte:** nur GM/Admin.
+
+### `listAllStatusEffects(user_id, username, password_hash) -> dict[str, dict]`
+Listet alle Statuseffekte, die der Nutzer sehen darf.
+- **Rechte:** GM/Admin sieht alle Statuseffekte; ein Spieler sieht nur Effekte aus seiner
+  `known_StatusEffects`-Liste.
+- **Fehler:** `PermissionError` bei ungültigem Login.
+
+---
 
 ## stat_engine.py — Formel-Engine für StatSheet.json
 
@@ -324,3 +383,36 @@ graph LR
 `Characters.py` und `Items.py` importieren `Users.py` für Login-/Rollenprüfung.
 `Items.py` importiert zusätzlich `Characters.py` (nur für dessen `main()`-Test) und `validate_data.py`.
 `stat_engine.py` und `validate_data.py` sind unabhängig lauffähig.
+
+---
+
+## rest_api.py — minimale REST-Schnittstelle
+
+Setzt jede oben dokumentierte Funktion 1:1 als HTTP-Route um (`python rest_api.py` startet den
+Entwicklungsserver; produktiv über einen WSGI-Server auf `rest_api:app` verweisen).
+
+- **Route:** `POST /api/<Funktionsname>` (z. B. `POST /api/createUser`, `POST /api/listAllItems`).
+  `POST` wird einheitlich für **alle** Aufrufe verwendet (auch lesende), weil praktisch jede
+  Funktion ein `password_hash`-Credential entgegennimmt — das gehört nicht in eine URL/Query
+  (Server-/Proxy-Logs, Browser-Verlauf).
+- **Request-Body:** JSON-Objekt, dessen Schlüssel exakt den Parameternamen der Funktion
+  entsprechen (siehe Dokumentation oben). Parameter mit Default-Wert sind optional.
+- **Response:** der Rückgabewert der Funktion als JSON (`None` → `null`).
+- **Fehlerantworten:** `{"error": "<Meldung>"}` mit Statuscode
+  `403` (`PermissionError`), `400` (`ValueError`/`TypeError`/fehlender Pflichtparameter),
+  `404` (`FileNotFoundError`), `500` (alle anderen Fehler).
+
+### Abweichungen vom automatischen 1:1-Mapping (aus Sicherheitsgründen)
+
+- **`POST /api/load_and_compute`** — nimmt `{"character_id": "..."}` statt eines rohen
+  Dateipfads entgegen. Die Funktion `stat_engine.load_and_compute(path)` einen beliebigen,
+  clientseitig übergebenen Pfad einlesen zu lassen, wäre ein Path-Traversal-/Arbitrary-File-Read-
+  Risiko; die Route löst den `StatSheet.json`-Pfad stattdessen intern und sicher über die
+  Charakter-ID auf.
+- **`POST /api/validate_all`** — ruft `api.validate_all()` (= `validate_data.main()`) auf und
+  liefert `{"status": "ok"}` bei Erfolg. Die einzelnen `validate_data.TestX`-Funktionen werden
+  nicht als eigene Routen freigegeben, da sie intern verkettet sind (`TestForUserFolder` benötigt
+  z. B. die Rückgabewerte der anderen Prüfungen) und laut API.md ohnehin nur über den
+  gemeinsamen Einstiegspunkt aufgerufen werden sollen.
+- **`StatSheetEngine`, `FormulaError`, `CircularReferenceError`, `CouldNotReach`** — Klassen/
+  Exceptions, keine aufrufbaren Endpunkte.

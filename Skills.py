@@ -49,6 +49,21 @@ def assignSkillToCharacter(user_id: str, username: str, password_hash: str, skil
 def removeSkillFromCharacter(user_id: str, username: str, password_hash: str, skill_id: str, character_id: str) -> None:
     _global_resources.update_character_rows(user_id, username, password_hash, skill_id, character_id, resource_path=SKILLS_PATH, resource_name=RESOURCE_NAME, row_name=ROW_NAME, known_field=KNOWN_FIELD, remove=True)
 
+def listAllSkills(user_id: str, username: str, password_hash: str) -> dict[str, dict]:
+    """List all skills. the USer Can see"""
+    #a gm can see all skills, a player can only see the skills that are in his konws_skills list.
+    
+    _global_resources.require_user(user_id, username, password_hash)
+    skills = _global_resources.load_json(SKILLS_PATH)
+    role = _global_resources.get_user_role(user_id)
+    is_manager = role is not None and role.lower() == "gm"
+    if is_manager:
+        return skills
+    # Filter skills based on what the player knows
+    #get User's known skills
+    known_skills = _global_resources.get_user_known_resources(user_id, KNOWN_FIELD)
+    visible_skills = {skill_id: skill for skill_id, skill in skills.items() if skill_id in known_skills}
+    return visible_skills
 
 def main() -> None:
     """Run the complete permission, known-list, row, duplicate, and cleanup test."""

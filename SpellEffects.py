@@ -46,6 +46,20 @@ def removeSpellEffectFromCharacter(user_id: str, username: str, password_hash: s
     _global_resources.update_character_rows(user_id, username, password_hash, spell_effect_id, character_id, resource_path=SPELL_EFFECTS_PATH, resource_name=RESOURCE_NAME, row_name=ROW_NAME, known_field=KNOWN_FIELD, remove=True)
 
 
+def listAllSpellEffects(user_id: str, username: str, password_hash: str) -> dict[str, dict]:
+    """List all spell effects the user can see."""
+    _global_resources.require_user(user_id, username, password_hash)
+    effects = _global_resources.load_json(SPELL_EFFECTS_PATH)
+    role = _global_resources.get_user_role(user_id)
+    is_manager = role is not None and role.lower() == "gm"
+    if is_manager:
+        return effects
+    # Filter effects based on what the player knows
+    known_effects = _global_resources.get_user_known_resources(user_id, KNOWN_FIELD)
+    visible_effects = {effect_id: effect for effect_id, effect in effects.items() if effect_id in known_effects}
+    return visible_effects
+
+
 def main() -> None:
     """Run the complete permission, known-list, row, duplicate, and cleanup test."""
     import Characters

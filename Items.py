@@ -260,6 +260,28 @@ def _expect_error(expected: type[Exception], action: Any, description: str) -> N
         return
     raise AssertionError(f"Expected {expected.__name__}: {description}")
 
+def ListAllItems(user_id: str, username: str, password_hash: str) -> dict[str, dict[str, Any]]:
+    """Return a dictionary of all items the User Can see."""
+    #gm cann se all
+    #player can see all he has knoledge of.
+    if not Users.loginTestUser(user_id, username, password_hash):
+        raise PermissionError("Invalid user credentials")
+    role = Users.getUserRole(user_id)
+    is_manager = role is not None and role.lower() == "gm"
+    all_items = _load_json(ITEMS_PATH)
+    if is_manager:
+        return all_items
+    # Filter items based on what the player knowss the knowleg comes from owner
+    visible_items = {}
+    for item_id, item in all_items.items():
+        owner_id = item.get("owner")
+        if owner_id is None:
+            continue  # Unassigned items are not visible to players
+        owner_path, owner_character = _find_character(owner_id)
+        owner_user_id = f"User_{owner_path.parent.name}"
+        if owner_user_id == user_id:
+            visible_items[item_id] = item
+    return visible_items
 
 def main() -> None:
     """Exercise every public item operation with multiple users and characters."""
