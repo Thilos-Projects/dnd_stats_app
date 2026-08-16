@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>D&amp;D Stats – Meine Charaktere</title>
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header>
+  <h1>Meine Charaktere</h1>
+  <span class="who" id="who"></span>
+  <button class="ghost" id="console">API-Konsole</button>
+  <button class="ghost" id="logout">Abmelden</button>
+</header>
+
+<main id="admin-page">
+  <section class="panel">
+    <h2>Charaktere</h2>
+    <div class="status" id="list-status"></div>
+    <ul class="character-list" id="character-list"></ul>
+    <button id="reload">Liste neu laden</button>
+    <button class="accent" id="new">Neuen Charakter erstellen</button>
+  </section>
+
+  <section class="panel" id="create-panel" style="display: none">
+    <h2>Neuen Charakter erstellen</h2>
+    <div class="field">
+      <label for="folder-name">Ordnername <span class="hint">(ein einzelner Pfadbestandteil, z. B. <code>krieger_1</code>)</span></label>
+      <input type="text" id="folder-name" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="display-name">Anzeigename</label>
+      <input type="text" id="display-name" autocomplete="off">
+    </div>
+    <button class="accent" id="create">Erstellen</button>
+    <button id="cancel">Abbrechen</button>
+    <div class="status" id="create-status"></div>
+  </section>
+
+  <div id="errorbox"><h3></h3><div class="msg"></div><pre></pre></div>
+</main>
+
+<script>
+const session = JSON.parse(sessionStorage.getItem('session') || 'null');
+if (!session || session.mode !== 'user') {
+  window.location.replace('/');
+}
+
+function credentials() {
+  return { user_id: session.userId, username: session.username, password_hash: session.password };
+}
+
+function characterName(characterId) {
+  return String(characterId).replace(/^Charakter_/, '');
+}
+
+async function callApi(name, body) {
+  const response = await fetch('/api/' + name, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const text = await response.text();
+  let payload;
+  try { payload = JSON.parse(text); } catch (error) { payload = text; }
+  return { ok: response.ok, status: response.status, payload: payload };
+}
+
+function setStatus(id, text, ok) {
+  const element = document.getElementById(id);
+  element.textContent = text;
+  element.className = 'status ' + (ok ? 'ok' : 'err');
+}
+
+function hideError() {
+  document.getElementById('errorbox').style.display = 'none';
+}
+
+function showError(result) {
+  const payload = result.payload;
+  const errorBox = document.getElementById('errorbox');
+  errorBox.style.display = 'block';
+  if (payload && typeof payload === 'object' && payload.error !== undefined) {
+    errorBox.querySelector('h3').textContent = payload.exception
+      ? payload.exception + ' (' + payload.exception_module + ')'
+      : 'Fehler';
+    let message = String(payload.error);
+    if (payload.args && payload.args.length) message += '\nargs: ' + payload.args.join(', ');
+    if (payload.cause) message += '\nausgelöst durch: ' + payload.cause;
+    errorBox.querySelector('.msg').textContent = message;
+    errorBox.querySelector('pre').textContent = payload.traceback || '';
+    errorBox.querySelector('pre').style.display = payload.traceback ? 'block' : 'none';
+  } else {
+    errorBox.querySelector('h3').textContent = 'HTTP ' + result.status;
+    errorBox.querySelector('.msg').textContent = String(payload);
+    errorBox.querySelector('pre').style.display = 'none';
+  }
+}
+
+document.getElementById('logout').onclick = () => {
+  sessionStorage.removeItem('session');
+  window.location.href = '/';
+};
+
+document.getElementById('who').textContent =
+  session.username + ' (' + session.userId + ', Rolle: ' + session.role + ')';
+document.getElementById('console').onclick = () => { window.location.href = '/static/app.html'; };
+
+async function loadCharacters() {
+  hideError();
+  setStatus('list-status', 'Lade Charaktere …', true);
+  const list = document.getElementById('character-list');
+  list.innerHTML = '';
+
+  const result = await callApi('listOwnCharacters', credentials());
+  if (!result.ok) {
+    setStatus('list-status', 'Charaktere konnten nicht geladen werden.', false);
+    showError(result);
+    return;
+  }
+
+  const characterIds = result.payload || [];
+  characterIds.forEach(characterId => {
+    const item = document.createElement('li');
+    const link = document.createElement('a');
+    link.href = '/static/character.html?id=' + encodeURIComponent(characterId);
+    link.textContent = characterName(characterId);
+    const id = document.createElement('span');
+    id.className = 'muted';
+    id.textContent = characterId;
+    item.appendChild(link);
+    item.appendChild(id);
+    list.appendChild(item);
+  });
+
+  setStatus('list-status', characterIds.length
+    ? characterIds.length + ' Charakter(e).'
+    : 'Noch keine Charaktere vorhanden.', true);
+}
+
+async function createCharacter() {
+  hideError();
+  const button = document.getElementById('create');
+  const folderName = document.getElementById('folder-name').value;
+  const displayName = document.getElementById('display-name').value;
+  if (folderName === '' || displayName === '') {
+    setStatus('create-status', 'Ordnername und Anzeigename sind erforderlich.', false);
+    return;
+  }
+
+  button.disabled = true;
+  setStatus('create-status', 'Erstelle Charakter …', true);
+  const result = await callApi('createCharacter',
+    Object.assign(credentials(), { folder_name: folderName, display_name: displayName }));
+  button.disabled = false;
+
+  if (!result.ok) {
+    setStatus('create-status', 'Erstellen fehlgeschlagen.', false);
+    showError(result);
+    return;
+  }
+  setStatus('create-status', 'Charakter angelegt: ' + result.payload, true);
+  document.getElementById('folder-name').value = '';
+  document.getElementById('display-name').value = '';
+  await loadCharacters();
+}
+
+document.getElementById('reload').onclick = loadCharacters;
+document.getElementById('create').onclick = createCharacter;
+document.getElementById('new').onclick = () => {
+  document.getElementById('create-panel').style.display = '';
+  document.getElementById('folder-name').focus();
+};
+document.getElementById('cancel').onclick = () => {
+  document.getElementById('create-panel').style.display = 'none';
+  setStatus('create-status', '', true);
+};
+
+loadCharacters();
+</script>
+</body>
+</html>

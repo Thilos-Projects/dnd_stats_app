@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>D&amp;D Stats – Anmeldung</title>
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header><h1>D&amp;D Stats – Anmeldung</h1></header>
+
+<div id="login-page">
+  <section class="card">
+    <h2>Login</h2>
+    <p class="sub">Anmeldung als Benutzer (Spieler oder GM).</p>
+    <div class="field">
+      <label for="username">Benutzername</label>
+      <input type="text" id="username" autocomplete="username">
+    </div>
+    <div class="field">
+      <label for="password">Passwort</label>
+      <input type="password" id="password" autocomplete="current-password">
+    </div>
+    <button class="accent" id="login-button">Login</button>
+    <div class="message" id="login-message"></div>
+  </section>
+
+  <section class="card">
+    <h2>Adminbereich</h2>
+    <p class="sub">Zugang mit dem Adminpasswort.</p>
+    <div class="field">
+      <label for="adminpass">Adminpasswort</label>
+      <input type="password" id="adminpass" autocomplete="off">
+    </div>
+    <button id="admin-button">Adminbereich</button>
+    <div class="message" id="admin-message"></div>
+  </section>
+</div>
+
+<script>
+sessionStorage.removeItem('session');
+
+function setMessage(id, text, ok) {
+  const element = document.getElementById(id);
+  element.textContent = text;
+  element.className = 'message ' + (ok ? 'ok' : 'err');
+}
+
+async function callApi(name, body) {
+  const response = await fetch('/api/' + name, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const text = await response.text();
+  let payload;
+  try { payload = JSON.parse(text); } catch (error) { payload = text; }
+  return { ok: response.ok, status: response.status, payload: payload };
+}
+
+function describeError(result) {
+  const payload = result.payload;
+  if (payload && typeof payload === 'object' && payload.error !== undefined) {
+    return (payload.exception ? payload.exception + ': ' : '') + payload.error;
+  }
+  return 'HTTP ' + result.status + ': ' + String(payload);
+}
+
+async function doLogin() {
+  const button = document.getElementById('login-button');
+  // Eingaben werden unverändert als String übergeben (kein JSON-Parsing).
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  if (username === '' || password === '') {
+    setMessage('login-message', 'Bitte Benutzername und Passwort eingeben.', false);
+    return;
+  }
+
+  button.disabled = true;
+  setMessage('login-message', 'Prüfe Anmeldedaten …', true);
+  try {
+    const result = await callApi('tryFindUserID', { username: username, password_Hash: password });
+    if (!result.ok) {
+      setMessage('login-message', describeError(result), false);
+      return;
+    }
+    const userId = result.payload;
+    if (!userId) {
+      setMessage('login-message', 'Benutzername oder Passwort ist falsch.', false);
+      return;
+    }
+    const roleResult = await callApi('getUserRole', { userId: userId });
+    const role = roleResult.ok && roleResult.payload ? roleResult.payload : 'player';
+
+    sessionStorage.setItem('session', JSON.stringify({
+      mode: 'user',
+      userId: userId,
+      username: username,
+      password: password,
+      role: role
+    }));
+    window.location.href = '/static/player.html';
+  } catch (error) {
+    setMessage('login-message', 'Netzwerkfehler: ' + error, false);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function doAdmin() {
+  const button = document.getElementById('admin-button');
+  const adminpass = document.getElementById('adminpass').value;
+  if (adminpass === '') {
+    setMessage('admin-message', 'Bitte Adminpasswort eingeben.', false);
+    return;
+  }
+
+  button.disabled = true;
+  setMessage('admin-message', 'Prüfe Adminpasswort …', true);
+  try {
+    // listUsers wirft bei falschem Adminpasswort einen ValueError und dient so als Prüfung.
+    const result = await callApi('listUsers', { adminpass: adminpass });
+    if (!result.ok) {
+      setMessage('admin-message', describeError(result), false);
+      return;
+    }
+    sessionStorage.setItem('session', JSON.stringify({ mode: 'admin', adminpass: adminpass }));
+    window.location.href = '/static/admin.html';
+  } catch (error) {
+    setMessage('admin-message', 'Netzwerkfehler: ' + error, false);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+document.getElementById('login-button').onclick = doLogin;
+document.getElementById('admin-button').onclick = doAdmin;
+document.getElementById('password').addEventListener('keydown', event => {
+  if (event.key === 'Enter') doLogin();
+});
+document.getElementById('adminpass').addEventListener('keydown', event => {
+  if (event.key === 'Enter') doAdmin();
+});
+</script>
+</body>
+</html>

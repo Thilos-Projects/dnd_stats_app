@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>D&amp;D Stats – Adminbereich</title>
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header>
+  <h1>D&amp;D Stats – Adminbereich</h1>
+  <span class="who" id="who"></span>
+  <button class="ghost" id="console">API-Konsole</button>
+  <button class="ghost" id="logout">Abmelden</button>
+</header>
+
+<main id="admin-page">
+  <section class="panel">
+    <h2>Benutzer</h2>
+    <div class="status" id="list-status"></div>
+    <table id="user-table">
+      <thead>
+        <tr><th>Benutzer-ID</th><th>Rolle</th><th class="actions">Aktion</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button id="reload">Liste neu laden</button>
+  </section>
+
+  <section class="panel">
+    <h2>Benutzer hinzufügen</h2>
+    <div class="field">
+      <label for="new-username">Benutzername</label>
+      <input type="text" id="new-username" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="new-password">Passwort</label>
+      <input type="text" id="new-password" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="new-role">Rolle</label>
+      <input type="text" id="new-role" value="player" autocomplete="off">
+    </div>
+    <button class="accent" id="create">Benutzer anlegen</button>
+    <div class="status" id="create-status"></div>
+  </section>
+
+  <div id="errorbox"><h3></h3><div class="msg"></div><pre></pre></div>
+</main>
+
+<script>
+const session = JSON.parse(sessionStorage.getItem('session') || 'null');
+if (!session || session.mode !== 'admin') {
+  window.location.replace('/');
+}
+
+document.getElementById('logout').onclick = () => {
+  sessionStorage.removeItem('session');
+  window.location.href = '/';
+};
+document.getElementById('console').onclick = () => {
+  window.location.href = '/static/app.html';
+};
+
+async function callApi(name, body) {
+  const response = await fetch('/api/' + name, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const text = await response.text();
+  let payload;
+  try { payload = JSON.parse(text); } catch (error) { payload = text; }
+  return { ok: response.ok, status: response.status, payload: payload };
+}
+
+function hideError() {
+  document.getElementById('errorbox').style.display = 'none';
+}
+
+function showError(result) {
+  const payload = result.payload;
+  const errorBox = document.getElementById('errorbox');
+  errorBox.style.display = 'block';
+  if (payload && typeof payload === 'object' && payload.error !== undefined) {
+    errorBox.querySelector('h3').textContent = payload.exception
+      ? payload.exception + ' (' + payload.exception_module + ')'
+      : 'Fehler';
+    let message = String(payload.error);
+    if (payload.args && payload.args.length) message += '\nargs: ' + payload.args.join(', ');
+    if (payload.cause) message += '\nausgelöst durch: ' + payload.cause;
+    errorBox.querySelector('.msg').textContent = message;
+    errorBox.querySelector('pre').textContent = payload.traceback || '';
+    errorBox.querySelector('pre').style.display = payload.traceback ? 'block' : 'none';
+  } else {
+    errorBox.querySelector('h3').textContent = 'HTTP ' + result.status;
+    errorBox.querySelector('.msg').textContent = String(payload);
+    errorBox.querySelector('pre').style.display = 'none';
+  }
+}
+
+function setStatus(id, text, ok) {
+  const element = document.getElementById(id);
+  element.textContent = text;
+  element.className = 'status ' + (ok ? 'ok' : 'err');
+}
+
+async function loadUsers() {
+  hideError();
+  setStatus('list-status', 'Lade Benutzer …', true);
+  const body = document.querySelector('#user-table tbody');
+  body.innerHTML = '';
+
+  const result = await callApi('listUsers', { adminpass: session.adminpass });
+  if (!result.ok) {
+    setStatus('list-status', 'Benutzerliste konnte nicht geladen werden.', false);
+    showError(result);
+    return;
+  }
+
+  const userIds = result.payload || [];
+  const roles = await Promise.all(userIds.map(userId => callApi('getUserRole', { userId: userId })));
+
+  userIds.forEach((userId, index) => {
+    const row = document.createElement('tr');
+
+    const idCell = document.createElement('td');
+    idCell.textContent = userId;
+
+    const roleCell = document.createElement('td');
+    const roleResult = roles[index];
+    roleCell.textContent = roleResult.ok ? (roleResult.payload === null ? '–' : roleResult.payload) : '?';
+
+    const actionCell = document.createElement('td');
+    actionCell.className = 'actions';
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'danger';
+    deleteButton.textContent = 'Löschen';
+    deleteButton.onclick = () => deleteUser(userId, deleteButton);
+    actionCell.appendChild(deleteButton);
+
+    row.appendChild(idCell);
+    row.appendChild(roleCell);
+    row.appendChild(actionCell);
+    body.appendChild(row);
+  });
+
+  setStatus('list-status', userIds.length + ' Benutzer gefunden.', true);
+}
+
+async function deleteUser(userId, button) {
+  if (!window.confirm('Benutzer ' + userId + ' wirklich löschen? Der Benutzerordner wird mitgelöscht.')) return;
+  hideError();
+  button.disabled = true;
+  const result = await callApi('deleteUser', { adminpass: session.adminpass, userId: userId });
+  if (!result.ok) {
+    setStatus('list-status', 'Löschen fehlgeschlagen.', false);
+    showError(result);
+    button.disabled = false;
+    return;
+  }
+  await loadUsers();
+  setStatus('list-status', 'Benutzer ' + userId + ' gelöscht.', true);
+}
+
+async function createUser() {
+  hideError();
+  const button = document.getElementById('create');
+  // Alle Eingaben werden unverändert als String übergeben.
+  const username = document.getElementById('new-username').value;
+  const password = document.getElementById('new-password').value;
+  const role = document.getElementById('new-role').value;
+  if (username === '' || password === '' || role === '') {
+    setStatus('create-status', 'Benutzername, Passwort und Rolle sind erforderlich.', false);
+    return;
+  }
+
+  button.disabled = true;
+  setStatus('create-status', 'Lege Benutzer an …', true);
+  const result = await callApi('createUser', {
+    adminpass: session.adminpass,
+    username: username,
+    password_Hash: password,
+    role: role
+  });
+  button.disabled = false;
+
+  if (!result.ok) {
+    setStatus('create-status', 'Anlegen fehlgeschlagen.', false);
+    showError(result);
+    return;
+  }
+  setStatus('create-status', 'Benutzer angelegt: ' + result.payload, true);
+  document.getElementById('new-username').value = '';
+  document.getElementById('new-password').value = '';
+  await loadUsers();
+}
+
+document.getElementById('reload').onclick = loadUsers;
+document.getElementById('create').onclick = createUser;
+
+if (session && session.mode === 'admin') {
+  document.getElementById('who').textContent = 'Angemeldet als: Administrator';
+  loadUsers();
+}
+</script>
+</body>
+</html>

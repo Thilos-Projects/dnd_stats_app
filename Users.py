@@ -4,7 +4,7 @@ from pathlib import Path
 import json
 
 # TODO: Move the admin credential out of source code when deployment configuration exists.
-AdminPassword = "1234"
+AdminPassword : str = "1234"
 ALLOWED_ROLES = {"gm", "player"}
 
 
@@ -46,7 +46,7 @@ def createUser(adminpass: str, username: str, password_Hash: str, role: str) -> 
     if isinstance(next_id, bool) or not isinstance(next_id, int) or next_id < 1:
         raise ValueError("Users.json must contain a positive integer next_id")
 
-    userId = f"User_{next_id}"
+    userId = f"User_{username}_{next_id}"
     while userId in users_data:
         next_id += 1
         userId = f"User_{next_id}"
@@ -129,6 +129,13 @@ def deleteUser(adminpass: str, userId: str):
                     shutil.rmtree(item)
             user_folder_path.rmdir()
 
+def tryFindUserID(username: str, password_Hash: str) -> str | None:
+    users_data = _load_users()
+
+    for key, value in users_data.items():
+        if isinstance(value, dict) and value.get("username") == username and value.get("password_hash") == password_Hash:
+            return key
+    return None
 
 def main():
     #schreibe einen test user in Users.json und lege einen ordner in Users an.

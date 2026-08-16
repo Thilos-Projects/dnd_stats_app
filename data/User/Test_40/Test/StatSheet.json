@@ -1,0 +1,1632 @@
+{
+  "meta": {
+    "age": {
+      "formula": "SUM(learned_abilities.rows[].alters_anstieg)",
+      "value": 0
+    },
+    "magie_speicher": {
+      "formula": "stats.Konstitution.konst_wert + stats.Körperkraft.konst_wert + SUM(equipped_items.rows[].stat_bonus.MagieSpeicher)",
+      "value": 10
+    },
+    "magische_regeneration": {
+      "formula": "stats.Klugheit.konst_wert + stats.Intuition.konst_wert + SUM(equipped_items.rows[].stat_bonus.MagieRegeneration)",
+      "value": 10
+    }
+  },
+  "stats": {
+    "Mut": {
+      "min": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "max_konst": {
+        "formula": "MAX(meta.age.value - 8, 0)",
+        "value": 0
+      },
+      "max_magik": {
+        "formula": "meta.magie_speicher.value / 2",
+        "value": 5.0
+      },
+      "max_goettlich": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "konst_bonus": {
+        "formula": "SUM(learned_abilities.rows[].stat_bonus.Mut)",
+        "value": 0
+      },
+      "konst_wert": {
+        "formula": "5 + stats.Mut.konst_bonus",
+        "value": 5
+      },
+      "bonus": {
+        "formula": "SUM(equipped_items.rows[].stat_bonus.Mut) + SUM(active_spell_effects.rows[].stat_bonus.Mut) + SUM(active_status_effects.rows[].stat_bonus.Mut)",
+        "value": 0
+      },
+      "wert": {
+        "formula": "stats.Mut.konst_wert + stats.Mut.bonus",
+        "value": 5
+      },
+      "malus_for_under": {
+        "formula": "MAX((stats.Mut.wert - stats.Mut.min) * -1, 0)",
+        "value": 0
+      },
+      "malus_for_over": {
+        "formula": "MAX((stats.Mut.max_konst - stats.Mut.wert) * -1, 0)",
+        "value": 5
+      }
+    },
+    "Klugheit": {
+      "min": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "max_konst": {
+        "formula": "MAX(meta.age.value - 8, 0)",
+        "value": 0
+      },
+      "max_magik": {
+        "formula": "meta.magie_speicher.value / 2",
+        "value": 5.0
+      },
+      "max_goettlich": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "konst_bonus": {
+        "formula": "SUM(learned_abilities.rows[].stat_bonus.Klugheit)",
+        "value": 0
+      },
+      "konst_wert": {
+        "formula": "5 + stats.Klugheit.konst_bonus",
+        "value": 5
+      },
+      "bonus": {
+        "formula": "SUM(equipped_items.rows[].stat_bonus.Klugheit) + SUM(active_spell_effects.rows[].stat_bonus.Klugheit) + SUM(active_status_effects.rows[].stat_bonus.Klugheit)",
+        "value": 0
+      },
+      "wert": {
+        "formula": "stats.Klugheit.konst_wert + stats.Klugheit.bonus",
+        "value": 5
+      },
+      "malus_for_under": {
+        "formula": "MAX((stats.Klugheit.wert - stats.Klugheit.min) * -1, 0)",
+        "value": 0
+      },
+      "malus_for_over": {
+        "formula": "MAX((stats.Klugheit.max_konst - stats.Klugheit.wert) * -1, 0)",
+        "value": 5
+      }
+    },
+    "Intuition": {
+      "min": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "max_konst": {
+        "formula": "MAX(meta.age.value - 8, 0)",
+        "value": 0
+      },
+      "max_magik": {
+        "formula": "meta.magie_speicher.value / 2",
+        "value": 5.0
+      },
+      "max_goettlich": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "konst_bonus": {
+        "formula": "SUM(learned_abilities.rows[].stat_bonus.Intuition)",
+        "value": 0
+      },
+      "konst_wert": {
+        "formula": "5 + stats.Intuition.konst_bonus",
+        "value": 5
+      },
+      "bonus": {
+        "formula": "SUM(equipped_items.rows[].stat_bonus.Intuition) + SUM(active_spell_effects.rows[].stat_bonus.Intuition) + SUM(active_status_effects.rows[].stat_bonus.Intuition)",
+        "value": 0
+      },
+      "wert": {
+        "formula": "stats.Intuition.konst_wert + stats.Intuition.bonus",
+        "value": 5
+      },
+      "malus_for_under": {
+        "formula": "MAX((stats.Intuition.wert - stats.Intuition.min) * -1, 0)",
+        "value": 0
+      },
+      "malus_for_over": {
+        "formula": "MAX((stats.Intuition.max_konst - stats.Intuition.wert) * -1, 0)",
+        "value": 5
+      }
+    },
+    "Charisma": {
+      "min": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "max_konst": {
+        "formula": "MAX(meta.age.value - 8, 0)",
+        "value": 0
+      },
+      "max_magik": {
+        "formula": "meta.magie_speicher.value / 2",
+        "value": 5.0
+      },
+      "max_goettlich": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "konst_bonus": {
+        "formula": "SUM(learned_abilities.rows[].stat_bonus.Charisma)",
+        "value": 0
+      },
+      "konst_wert": {
+        "formula": "5 + stats.Charisma.konst_bonus",
+        "value": 5
+      },
+      "bonus": {
+        "formula": "SUM(equipped_items.rows[].stat_bonus.Charisma) + SUM(active_spell_effects.rows[].stat_bonus.Charisma) + SUM(active_status_effects.rows[].stat_bonus.Charisma)",
+        "value": 0
+      },
+      "wert": {
+        "formula": "stats.Charisma.konst_wert + stats.Charisma.bonus",
+        "value": 5
+      },
+      "malus_for_under": {
+        "formula": "MAX((stats.Charisma.wert - stats.Charisma.min) * -1, 0)",
+        "value": 0
+      },
+      "malus_for_over": {
+        "formula": "MAX((stats.Charisma.max_konst - stats.Charisma.wert) * -1, 0)",
+        "value": 5
+      }
+    },
+    "Fingerfertigkeit": {
+      "min": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "max_konst": {
+        "formula": "MAX(meta.age.value - 8, 0)",
+        "value": 0
+      },
+      "max_magik": {
+        "formula": "meta.magie_speicher.value / 2",
+        "value": 5.0
+      },
+      "max_goettlich": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "konst_bonus": {
+        "formula": "SUM(learned_abilities.rows[].stat_bonus.Fingerfertigkeit)",
+        "value": 0
+      },
+      "konst_wert": {
+        "formula": "5 + stats.Fingerfertigkeit.konst_bonus",
+        "value": 5
+      },
+      "bonus": {
+        "formula": "SUM(equipped_items.rows[].stat_bonus.Fingerfertigkeit) + SUM(active_spell_effects.rows[].stat_bonus.Fingerfertigkeit) + SUM(active_status_effects.rows[].stat_bonus.Fingerfertigkeit)",
+        "value": 0
+      },
+      "wert": {
+        "formula": "stats.Fingerfertigkeit.konst_wert + stats.Fingerfertigkeit.bonus",
+        "value": 5
+      },
+      "malus_for_under": {
+        "formula": "MAX((stats.Fingerfertigkeit.wert - stats.Fingerfertigkeit.min) * -1, 0)",
+        "value": 0
+      },
+      "malus_for_over": {
+        "formula": "MAX((stats.Fingerfertigkeit.max_konst - stats.Fingerfertigkeit.wert) * -1, 0)",
+        "value": 5
+      }
+    },
+    "Gewandheit": {
+      "min": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "max_konst": {
+        "formula": "MAX(meta.age.value - 8, 0)",
+        "value": 0
+      },
+      "max_magik": {
+        "formula": "meta.magie_speicher.value / 2",
+        "value": 5.0
+      },
+      "max_goettlich": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "konst_bonus": {
+        "formula": "SUM(learned_abilities.rows[].stat_bonus.Gewandheit)",
+        "value": 0
+      },
+      "konst_wert": {
+        "formula": "5 + stats.Gewandheit.konst_bonus",
+        "value": 5
+      },
+      "bonus": {
+        "formula": "SUM(equipped_items.rows[].stat_bonus.Gewandheit) + SUM(active_spell_effects.rows[].stat_bonus.Gewandheit) + SUM(active_status_effects.rows[].stat_bonus.Gewandheit)",
+        "value": 0
+      },
+      "wert": {
+        "formula": "stats.Gewandheit.konst_wert + stats.Gewandheit.bonus",
+        "value": 5
+      },
+      "malus_for_under": {
+        "formula": "MAX((stats.Gewandheit.wert - stats.Gewandheit.min) * -1, 0)",
+        "value": 0
+      },
+      "malus_for_over": {
+        "formula": "MAX((stats.Gewandheit.max_konst - stats.Gewandheit.wert) * -1, 0)",
+        "value": 5
+      }
+    },
+    "Konstitution": {
+      "min": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "max_konst": {
+        "formula": "MAX(meta.age.value - 8, 0)",
+        "value": 0
+      },
+      "max_magik": {
+        "formula": "meta.magie_speicher.value / 2",
+        "value": 5.0
+      },
+      "max_goettlich": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "konst_bonus": {
+        "formula": "SUM(learned_abilities.rows[].stat_bonus.Konstitution)",
+        "value": 0
+      },
+      "konst_wert": {
+        "formula": "5 + stats.Konstitution.konst_bonus",
+        "value": 5
+      },
+      "bonus": {
+        "formula": "SUM(equipped_items.rows[].stat_bonus.Konstitution) + SUM(active_spell_effects.rows[].stat_bonus.Konstitution) + SUM(active_status_effects.rows[].stat_bonus.Konstitution)",
+        "value": 0
+      },
+      "wert": {
+        "formula": "stats.Konstitution.konst_wert + stats.Konstitution.bonus",
+        "value": 5
+      },
+      "malus_for_under": {
+        "formula": "MAX((stats.Konstitution.wert - stats.Konstitution.min) * -1, 0)",
+        "value": 0
+      },
+      "malus_for_over": {
+        "formula": "MAX((stats.Konstitution.max_konst - stats.Konstitution.wert) * -1, 0)",
+        "value": 5
+      }
+    },
+    "Körperkraft": {
+      "min": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "max_konst": {
+        "formula": "MAX(meta.age.value - 8, 0)",
+        "value": 0
+      },
+      "max_magik": {
+        "formula": "meta.magie_speicher.value / 2",
+        "value": 5.0
+      },
+      "max_goettlich": {
+        "formula": "(meta.age.value - 8) / 2",
+        "value": -4.0
+      },
+      "konst_bonus": {
+        "formula": "SUM(learned_abilities.rows[].stat_bonus.Körperkraft)",
+        "value": 0
+      },
+      "konst_wert": {
+        "formula": "5 + stats.Körperkraft.konst_bonus",
+        "value": 5
+      },
+      "bonus": {
+        "formula": "SUM(equipped_items.rows[].stat_bonus.Körperkraft) + SUM(active_spell_effects.rows[].stat_bonus.Körperkraft) + SUM(active_status_effects.rows[].stat_bonus.Körperkraft)",
+        "value": 0
+      },
+      "wert": {
+        "formula": "stats.Körperkraft.konst_wert + stats.Körperkraft.bonus",
+        "value": 5
+      },
+      "malus_for_under": {
+        "formula": "MAX((stats.Körperkraft.wert - stats.Körperkraft.min) * -1, 0)",
+        "value": 0
+      },
+      "malus_for_over": {
+        "formula": "MAX((stats.Körperkraft.max_konst - stats.Körperkraft.wert) * -1, 0)",
+        "value": 5
+      }
+    }
+  },
+  "talents": {
+    "Körpertalent": {
+      "attributes": [
+        "Mut",
+        "Gewandheit",
+        "Körperkraft"
+      ],
+      "ausgeglichenheit_bonus": {
+        "formula": "MIN(MAX(3 - (ABS(stats.Mut.wert - MEDIAN(stats.Mut.wert, stats.Gewandheit.wert, stats.Körperkraft.wert)) + ABS(stats.Gewandheit.wert - MEDIAN(stats.Mut.wert, stats.Gewandheit.wert, stats.Körperkraft.wert)) + ABS(stats.Körperkraft.wert - MEDIAN(stats.Mut.wert, stats.Gewandheit.wert, stats.Körperkraft.wert))) - SUM(stats.Mut.malus_for_under, stats.Gewandheit.malus_for_under, stats.Körperkraft.malus_for_under) - SUM(stats.Mut.malus_for_over, stats.Gewandheit.malus_for_over, stats.Körperkraft.malus_for_over), -3), 3)",
+        "value": -3
+      },
+      "bonus": {
+        "formula": "SUM(learned_abilities.rows[].talent_bonus.Körpertalent) + SUM(active_spell_effects.rows[].talent_bonus.Körpertalent) + SUM(active_status_effects.rows[].talent_bonus.Körpertalent)",
+        "value": 0
+      },
+      "wert": {
+        "formula": "talents.Körpertalent.ausgeglichenheit_bonus + talents.Körpertalent.bonus",
+        "value": -3
+      }
+    },
+    "Geseltschaftstalent": {
+      "attributes": [
+        "Intuition",
+        "Charisma",
+        "Charisma"
+      ],
+      "ausgeglichenheit_bonus": {
+        "formula": "MIN(MAX(3 - (ABS(stats.Intuition.wert - MEDIAN(stats.Intuition.wert, stats.Charisma.wert, stats.Charisma.wert)) + ABS(stats.Charisma.wert - MEDIAN(stats.Intuition.wert, stats.Charisma.wert, stats.Charisma.wert)) + ABS(stats.Charisma.wert - MEDIAN(stats.Intuition.wert, stats.Charisma.wert, stats.Charisma.wert))) - SUM(stats.Intuition.malus_for_under, stats.Charisma.malus_for_under, stats.Charisma.malus_for_under) - SUM(stats.Intuition.malus_for_over, stats.Charisma.malus_for_over, stats.Charisma.malus_for_over), -3), 3)",
+        "value": -3
+      },
+      "bonus": {
+        "formula": "SUM(learned_abilities.rows[].talent_bonus.Geseltschaftstalent) + SUM(active_spell_effects.rows[].talent_bonus.Geseltschaftstalent) + SUM(active_status_effects.rows[].talent_bonus.Geseltschaftstalent)",
+        "value": 0
+      },
+      "wert": {
+        "formula": "talents.Geseltschaftstalent.ausgeglichenheit_bonus + talents.Geseltschaftstalent.bonus",
+        "value": -3
+      }
+    },
+    "Naturtalent": {
+      "attributes": [
+        "Mut",
+        "Gewandheit",
+        "Konstitution"
+      ],
+      "ausgeglichenheit_bonus": {
+        "formula": "MIN(MAX(3 - (ABS(stats.Mut.wert - MEDIAN(stats.Mut.wert, stats.Gewandheit.wert, stats.Konstitution.wert)) + ABS(stats.Gewandheit.wert - MEDIAN(stats.Mut.wert, stats.Gewandheit.wert, stats.Konstitution.wert)) + ABS(stats.Konstitution.wert - MEDIAN(stats.Mut.wert, stats.Gewandheit.wert, stats.Konstitution.wert))) - SUM(stats.Mut.malus_for_under, stats.Gewandheit.malus_for_under, stats.Konstitution.malus_for_under) - SUM(stats.Mut.malus_for_over, stats.Gewandheit.malus_for_over, stats.Konstitution.malus_for_over), -3), 3)",
+        "value": -3
+      },
+      "bonus": {
+        "formula": "SUM(learned_abilities.rows[].talent_bonus.Naturtalent) + SUM(active_spell_effects.rows[].talent_bonus.Naturtalent) + SUM(active_status_effects.rows[].talent_bonus.Naturtalent)",
+        "value": 0
+      },
+      "wert": {
+        "formula": "talents.Naturtalent.ausgeglichenheit_bonus + talents.Naturtalent.bonus",
+        "value": -3
+      }
+    },
+    "Wissenstalent": {
+      "attributes": [
+        "Klugheit",
+        "Klugheit",
+        "Intuition"
+      ],
+      "ausgeglichenheit_bonus": {
+        "formula": "MIN(MAX(3 - (ABS(stats.Klugheit.wert - MEDIAN(stats.Klugheit.wert, stats.Klugheit.wert, stats.Intuition.wert)) + ABS(stats.Klugheit.wert - MEDIAN(stats.Klugheit.wert, stats.Klugheit.wert, stats.Intuition.wert)) + ABS(stats.Intuition.wert - MEDIAN(stats.Klugheit.wert, stats.Klugheit.wert, stats.Intuition.wert))) - SUM(stats.Klugheit.malus_for_under, stats.Klugheit.malus_for_under, stats.Intuition.malus_for_under) - SUM(stats.Klugheit.malus_for_over, stats.Klugheit.malus_for_over, stats.Intuition.malus_for_over), -3), 3)",
+        "value": -3
+      },
+      "bonus": {
+        "formula": "SUM(learned_abilities.rows[].talent_bonus.Wissenstalent) + SUM(active_spell_effects.rows[].talent_bonus.Wissenstalent) + SUM(active_status_effects.rows[].talent_bonus.Wissenstalent)",
+        "value": 0
+      },
+      "wert": {
+        "formula": "talents.Wissenstalent.ausgeglichenheit_bonus + talents.Wissenstalent.bonus",
+        "value": -3
+      }
+    },
+    "Handwerkstalent": {
+      "attributes": [
+        "Fingerfertigkeit",
+        "Fingerfertigkeit",
+        "Konstitution"
+      ],
+      "ausgeglichenheit_bonus": {
+        "formula": "MIN(MAX(3 - (ABS(stats.Fingerfertigkeit.wert - MEDIAN(stats.Fingerfertigkeit.wert, stats.Fingerfertigkeit.wert, stats.Konstitution.wert)) + ABS(stats.Fingerfertigkeit.wert - MEDIAN(stats.Fingerfertigkeit.wert, stats.Fingerfertigkeit.wert, stats.Konstitution.wert)) + ABS(stats.Konstitution.wert - MEDIAN(stats.Fingerfertigkeit.wert, stats.Fingerfertigkeit.wert, stats.Konstitution.wert))) - SUM(stats.Fingerfertigkeit.malus_for_under, stats.Fingerfertigkeit.malus_for_under, stats.Konstitution.malus_for_under) - SUM(stats.Fingerfertigkeit.malus_for_over, stats.Fingerfertigkeit.malus_for_over, stats.Konstitution.malus_for_over), -3), 3)",
+        "value": -3
+      },
+      "bonus": {
+        "formula": "SUM(learned_abilities.rows[].talent_bonus.Handwerkstalent) + SUM(active_spell_effects.rows[].talent_bonus.Handwerkstalent) + SUM(active_status_effects.rows[].talent_bonus.Handwerkstalent)",
+        "value": 0
+      },
+      "wert": {
+        "formula": "talents.Handwerkstalent.ausgeglichenheit_bonus + talents.Handwerkstalent.bonus",
+        "value": -3
+      }
+    }
+  },
+  "skills": {
+    "Körpertalent": {
+      "Fliegen": {
+        "attributes": [
+          "Mut",
+          "Intuition",
+          "Gewandheit"
+        ],
+        "base_fw": {
+          "formula": "talents.Körpertalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Fliegen) + SUM(active_spell_effects.rows[].skill_bonus.Fliegen) + SUM(active_status_effects.rows[].skill_bonus.Fliegen)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Körpertalent.Fliegen.base_fw + skills.Körpertalent.Fliegen.bonus_fw",
+          "value": -3
+        }
+      },
+      "Gaukelei": {
+        "attributes": [
+          "Mut",
+          "Charisma",
+          "Fingerfertigkeit"
+        ],
+        "base_fw": {
+          "formula": "talents.Körpertalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Gaukelei) + SUM(active_spell_effects.rows[].skill_bonus.Gaukelei) + SUM(active_status_effects.rows[].skill_bonus.Gaukelei)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Körpertalent.Gaukelei.base_fw + skills.Körpertalent.Gaukelei.bonus_fw",
+          "value": -3
+        }
+      },
+      "Klettern": {
+        "attributes": [
+          "Mut",
+          "Gewandheit",
+          "Körperkraft"
+        ],
+        "base_fw": {
+          "formula": "talents.Körpertalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Klettern) + SUM(active_spell_effects.rows[].skill_bonus.Klettern) + SUM(active_status_effects.rows[].skill_bonus.Klettern)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Körpertalent.Klettern.base_fw + skills.Körpertalent.Klettern.bonus_fw",
+          "value": -3
+        }
+      },
+      "Körperbeherschung": {
+        "attributes": [
+          "Gewandheit",
+          "Gewandheit",
+          "Konstitution"
+        ],
+        "base_fw": {
+          "formula": "talents.Körpertalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Körperbeherschung) + SUM(active_spell_effects.rows[].skill_bonus.Körperbeherschung) + SUM(active_status_effects.rows[].skill_bonus.Körperbeherschung)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Körpertalent.Körperbeherschung.base_fw + skills.Körpertalent.Körperbeherschung.bonus_fw",
+          "value": -3
+        }
+      },
+      "Kraftakt": {
+        "attributes": [
+          "Konstitution",
+          "Körperkraft",
+          "Körperkraft"
+        ],
+        "base_fw": {
+          "formula": "talents.Körpertalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Kraftakt) + SUM(active_spell_effects.rows[].skill_bonus.Kraftakt) + SUM(active_status_effects.rows[].skill_bonus.Kraftakt)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Körpertalent.Kraftakt.base_fw + skills.Körpertalent.Kraftakt.bonus_fw",
+          "value": -3
+        }
+      },
+      "Reiten": {
+        "attributes": [
+          "Charisma",
+          "Gewandheit",
+          "Körperkraft"
+        ],
+        "base_fw": {
+          "formula": "talents.Körpertalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Reiten) + SUM(active_spell_effects.rows[].skill_bonus.Reiten) + SUM(active_status_effects.rows[].skill_bonus.Reiten)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Körpertalent.Reiten.base_fw + skills.Körpertalent.Reiten.bonus_fw",
+          "value": -3
+        }
+      },
+      "Schwimmen": {
+        "attributes": [
+          "Gewandheit",
+          "Konstitution",
+          "Körperkraft"
+        ],
+        "base_fw": {
+          "formula": "talents.Körpertalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Schwimmen) + SUM(active_spell_effects.rows[].skill_bonus.Schwimmen) + SUM(active_status_effects.rows[].skill_bonus.Schwimmen)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Körpertalent.Schwimmen.base_fw + skills.Körpertalent.Schwimmen.bonus_fw",
+          "value": -3
+        }
+      },
+      "Selbstbeherschung": {
+        "attributes": [
+          "Mut",
+          "Mut",
+          "Konstitution"
+        ],
+        "base_fw": {
+          "formula": "talents.Körpertalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Selbstbeherschung) + SUM(active_spell_effects.rows[].skill_bonus.Selbstbeherschung) + SUM(active_status_effects.rows[].skill_bonus.Selbstbeherschung)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Körpertalent.Selbstbeherschung.base_fw + skills.Körpertalent.Selbstbeherschung.bonus_fw",
+          "value": -3
+        }
+      },
+      "Singen": {
+        "attributes": [
+          "Klugheit",
+          "Charisma",
+          "Konstitution"
+        ],
+        "base_fw": {
+          "formula": "talents.Körpertalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Singen) + SUM(active_spell_effects.rows[].skill_bonus.Singen) + SUM(active_status_effects.rows[].skill_bonus.Singen)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Körpertalent.Singen.base_fw + skills.Körpertalent.Singen.bonus_fw",
+          "value": -3
+        }
+      },
+      "Sinnesschärfe": {
+        "attributes": [
+          "Klugheit",
+          "Intuition",
+          "Intuition"
+        ],
+        "base_fw": {
+          "formula": "talents.Körpertalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Sinnesschärfe) + SUM(active_spell_effects.rows[].skill_bonus.Sinnesschärfe) + SUM(active_status_effects.rows[].skill_bonus.Sinnesschärfe)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Körpertalent.Sinnesschärfe.base_fw + skills.Körpertalent.Sinnesschärfe.bonus_fw",
+          "value": -3
+        }
+      },
+      "Tanzen": {
+        "attributes": [
+          "Klugheit",
+          "Charisma",
+          "Gewandheit"
+        ],
+        "base_fw": {
+          "formula": "talents.Körpertalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Tanzen) + SUM(active_spell_effects.rows[].skill_bonus.Tanzen) + SUM(active_status_effects.rows[].skill_bonus.Tanzen)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Körpertalent.Tanzen.base_fw + skills.Körpertalent.Tanzen.bonus_fw",
+          "value": -3
+        }
+      },
+      "Taschendiebstal": {
+        "attributes": [
+          "Mut",
+          "Fingerfertigkeit",
+          "Gewandheit"
+        ],
+        "base_fw": {
+          "formula": "talents.Körpertalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Taschendiebstal) + SUM(active_spell_effects.rows[].skill_bonus.Taschendiebstal) + SUM(active_status_effects.rows[].skill_bonus.Taschendiebstal)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Körpertalent.Taschendiebstal.base_fw + skills.Körpertalent.Taschendiebstal.bonus_fw",
+          "value": -3
+        }
+      },
+      "Verbergen": {
+        "attributes": [
+          "Mut",
+          "Intuition",
+          "Gewandheit"
+        ],
+        "base_fw": {
+          "formula": "talents.Körpertalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Verbergen) + SUM(active_spell_effects.rows[].skill_bonus.Verbergen) + SUM(active_status_effects.rows[].skill_bonus.Verbergen)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Körpertalent.Verbergen.base_fw + skills.Körpertalent.Verbergen.bonus_fw",
+          "value": -3
+        }
+      },
+      "Zechen": {
+        "attributes": [
+          "Klugheit",
+          "Konstitution",
+          "Körperkraft"
+        ],
+        "base_fw": {
+          "formula": "talents.Körpertalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Zechen) + SUM(active_spell_effects.rows[].skill_bonus.Zechen) + SUM(active_status_effects.rows[].skill_bonus.Zechen)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Körpertalent.Zechen.base_fw + skills.Körpertalent.Zechen.bonus_fw",
+          "value": -3
+        }
+      }
+    },
+    "Geseltschaftstalent": {
+      "Bekehren/Überzeugen": {
+        "attributes": [
+          "Mut",
+          "Klugheit",
+          "Charisma"
+        ],
+        "base_fw": {
+          "formula": "talents.Geseltschaftstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Bekehren/Überzeugen) + SUM(active_spell_effects.rows[].skill_bonus.Bekehren/Überzeugen) + SUM(active_status_effects.rows[].skill_bonus.Bekehren/Überzeugen)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Geseltschaftstalent.Bekehren/Überzeugen.base_fw + skills.Geseltschaftstalent.Bekehren/Überzeugen.bonus_fw",
+          "value": -3
+        }
+      },
+      "Betöhren": {
+        "attributes": [
+          "Mut",
+          "Charisma",
+          "Charisma"
+        ],
+        "base_fw": {
+          "formula": "talents.Geseltschaftstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Betöhren) + SUM(active_spell_effects.rows[].skill_bonus.Betöhren) + SUM(active_status_effects.rows[].skill_bonus.Betöhren)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Geseltschaftstalent.Betöhren.base_fw + skills.Geseltschaftstalent.Betöhren.bonus_fw",
+          "value": -3
+        }
+      },
+      "Einschüchtern": {
+        "attributes": [
+          "Mut",
+          "Intuition",
+          "Charisma"
+        ],
+        "base_fw": {
+          "formula": "talents.Geseltschaftstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Einschüchtern) + SUM(active_spell_effects.rows[].skill_bonus.Einschüchtern) + SUM(active_status_effects.rows[].skill_bonus.Einschüchtern)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Geseltschaftstalent.Einschüchtern.base_fw + skills.Geseltschaftstalent.Einschüchtern.bonus_fw",
+          "value": -3
+        }
+      },
+      "Etikette": {
+        "attributes": [
+          "Klugheit",
+          "Intuition",
+          "Charisma"
+        ],
+        "base_fw": {
+          "formula": "talents.Geseltschaftstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Etikette) + SUM(active_spell_effects.rows[].skill_bonus.Etikette) + SUM(active_status_effects.rows[].skill_bonus.Etikette)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Geseltschaftstalent.Etikette.base_fw + skills.Geseltschaftstalent.Etikette.bonus_fw",
+          "value": -3
+        }
+      },
+      "Gassenwissen": {
+        "attributes": [
+          "Klugheit",
+          "Intuition",
+          "Charisma"
+        ],
+        "base_fw": {
+          "formula": "talents.Geseltschaftstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Gassenwissen) + SUM(active_spell_effects.rows[].skill_bonus.Gassenwissen) + SUM(active_status_effects.rows[].skill_bonus.Gassenwissen)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Geseltschaftstalent.Gassenwissen.base_fw + skills.Geseltschaftstalent.Gassenwissen.bonus_fw",
+          "value": -3
+        }
+      },
+      "Menschenkenntniss": {
+        "attributes": [
+          "Klugheit",
+          "Intuition",
+          "Gewandheit"
+        ],
+        "base_fw": {
+          "formula": "talents.Geseltschaftstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Menschenkenntniss) + SUM(active_spell_effects.rows[].skill_bonus.Menschenkenntniss) + SUM(active_status_effects.rows[].skill_bonus.Menschenkenntniss)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Geseltschaftstalent.Menschenkenntniss.base_fw + skills.Geseltschaftstalent.Menschenkenntniss.bonus_fw",
+          "value": -3
+        }
+      },
+      "Überreden": {
+        "attributes": [
+          "Mut",
+          "Intuition",
+          "Charisma"
+        ],
+        "base_fw": {
+          "formula": "talents.Geseltschaftstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Überreden) + SUM(active_spell_effects.rows[].skill_bonus.Überreden) + SUM(active_status_effects.rows[].skill_bonus.Überreden)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Geseltschaftstalent.Überreden.base_fw + skills.Geseltschaftstalent.Überreden.bonus_fw",
+          "value": -3
+        }
+      },
+      "Verkleiden": {
+        "attributes": [
+          "Intuition",
+          "Charisma",
+          "Gewandheit"
+        ],
+        "base_fw": {
+          "formula": "talents.Geseltschaftstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Verkleiden) + SUM(active_spell_effects.rows[].skill_bonus.Verkleiden) + SUM(active_status_effects.rows[].skill_bonus.Verkleiden)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Geseltschaftstalent.Verkleiden.base_fw + skills.Geseltschaftstalent.Verkleiden.bonus_fw",
+          "value": -3
+        }
+      },
+      "Willenskraft": {
+        "attributes": [
+          "Mut",
+          "Intuition",
+          "Charisma"
+        ],
+        "base_fw": {
+          "formula": "talents.Geseltschaftstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Willenskraft) + SUM(active_spell_effects.rows[].skill_bonus.Willenskraft) + SUM(active_status_effects.rows[].skill_bonus.Willenskraft)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Geseltschaftstalent.Willenskraft.base_fw + skills.Geseltschaftstalent.Willenskraft.bonus_fw",
+          "value": -3
+        }
+      }
+    },
+    "Naturtalent": {
+      "Fährtensuche": {
+        "attributes": [
+          "Mut",
+          "Intuition",
+          "Gewandheit"
+        ],
+        "base_fw": {
+          "formula": "talents.Naturtalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Fährtensuche) + SUM(active_spell_effects.rows[].skill_bonus.Fährtensuche) + SUM(active_status_effects.rows[].skill_bonus.Fährtensuche)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Naturtalent.Fährtensuche.base_fw + skills.Naturtalent.Fährtensuche.bonus_fw",
+          "value": -3
+        }
+      },
+      "Fesseln": {
+        "attributes": [
+          "Klugheit",
+          "Fingerfertigkeit",
+          "Körperkraft"
+        ],
+        "base_fw": {
+          "formula": "talents.Naturtalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Fesseln) + SUM(active_spell_effects.rows[].skill_bonus.Fesseln) + SUM(active_status_effects.rows[].skill_bonus.Fesseln)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Naturtalent.Fesseln.base_fw + skills.Naturtalent.Fesseln.bonus_fw",
+          "value": -3
+        }
+      },
+      "Fischen/Angeln": {
+        "attributes": [
+          "Fingerfertigkeit",
+          "Gewandheit",
+          "Konstitution"
+        ],
+        "base_fw": {
+          "formula": "talents.Naturtalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Fischen/Angeln) + SUM(active_spell_effects.rows[].skill_bonus.Fischen/Angeln) + SUM(active_status_effects.rows[].skill_bonus.Fischen/Angeln)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Naturtalent.Fischen/Angeln.base_fw + skills.Naturtalent.Fischen/Angeln.bonus_fw",
+          "value": -3
+        }
+      },
+      "Orrientierung": {
+        "attributes": [
+          "Klugheit",
+          "Intuition",
+          "Intuition"
+        ],
+        "base_fw": {
+          "formula": "talents.Naturtalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Orrientierung) + SUM(active_spell_effects.rows[].skill_bonus.Orrientierung) + SUM(active_status_effects.rows[].skill_bonus.Orrientierung)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Naturtalent.Orrientierung.base_fw + skills.Naturtalent.Orrientierung.bonus_fw",
+          "value": -3
+        }
+      },
+      "Pflanzenkunde": {
+        "attributes": [
+          "Klugheit",
+          "Fingerfertigkeit",
+          "Konstitution"
+        ],
+        "base_fw": {
+          "formula": "talents.Naturtalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Pflanzenkunde) + SUM(active_spell_effects.rows[].skill_bonus.Pflanzenkunde) + SUM(active_status_effects.rows[].skill_bonus.Pflanzenkunde)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Naturtalent.Pflanzenkunde.base_fw + skills.Naturtalent.Pflanzenkunde.bonus_fw",
+          "value": -3
+        }
+      },
+      "Tierkunde": {
+        "attributes": [
+          "Mut",
+          "Mut",
+          "Charisma"
+        ],
+        "base_fw": {
+          "formula": "talents.Naturtalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Tierkunde) + SUM(active_spell_effects.rows[].skill_bonus.Tierkunde) + SUM(active_status_effects.rows[].skill_bonus.Tierkunde)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Naturtalent.Tierkunde.base_fw + skills.Naturtalent.Tierkunde.bonus_fw",
+          "value": -3
+        }
+      },
+      "Wildnisleben": {
+        "attributes": [
+          "Mut",
+          "Gewandheit",
+          "Konstitution"
+        ],
+        "base_fw": {
+          "formula": "talents.Naturtalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Wildnisleben) + SUM(active_spell_effects.rows[].skill_bonus.Wildnisleben) + SUM(active_status_effects.rows[].skill_bonus.Wildnisleben)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Naturtalent.Wildnisleben.base_fw + skills.Naturtalent.Wildnisleben.bonus_fw",
+          "value": -3
+        }
+      }
+    },
+    "Wissenstalent": {
+      "Brett/Glücksspiel": {
+        "attributes": [
+          "Klugheit",
+          "Klugheit",
+          "Intuition"
+        ],
+        "base_fw": {
+          "formula": "talents.Wissenstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Brett/Glücksspiel) + SUM(active_spell_effects.rows[].skill_bonus.Brett/Glücksspiel) + SUM(active_status_effects.rows[].skill_bonus.Brett/Glücksspiel)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Wissenstalent.Brett/Glücksspiel.base_fw + skills.Wissenstalent.Brett/Glücksspiel.bonus_fw",
+          "value": -3
+        }
+      },
+      "Geographie": {
+        "attributes": [
+          "Klugheit",
+          "Klugheit",
+          "Intuition"
+        ],
+        "base_fw": {
+          "formula": "talents.Wissenstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Geographie) + SUM(active_spell_effects.rows[].skill_bonus.Geographie) + SUM(active_status_effects.rows[].skill_bonus.Geographie)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Wissenstalent.Geographie.base_fw + skills.Wissenstalent.Geographie.bonus_fw",
+          "value": -3
+        }
+      },
+      "Götter/Kulte": {
+        "attributes": [
+          "Klugheit",
+          "Klugheit",
+          "Intuition"
+        ],
+        "base_fw": {
+          "formula": "talents.Wissenstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Götter/Kulte) + SUM(active_spell_effects.rows[].skill_bonus.Götter/Kulte) + SUM(active_status_effects.rows[].skill_bonus.Götter/Kulte)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Wissenstalent.Götter/Kulte.base_fw + skills.Wissenstalent.Götter/Kulte.bonus_fw",
+          "value": -3
+        }
+      },
+      "Kriegstkunst": {
+        "attributes": [
+          "Klugheit",
+          "Klugheit",
+          "Intuition"
+        ],
+        "base_fw": {
+          "formula": "talents.Wissenstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Kriegstkunst) + SUM(active_spell_effects.rows[].skill_bonus.Kriegstkunst) + SUM(active_status_effects.rows[].skill_bonus.Kriegstkunst)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Wissenstalent.Kriegstkunst.base_fw + skills.Wissenstalent.Kriegstkunst.bonus_fw",
+          "value": -3
+        }
+      },
+      "Magiekunde": {
+        "attributes": [
+          "Mut",
+          "Klugheit",
+          "Intuition"
+        ],
+        "base_fw": {
+          "formula": "talents.Wissenstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Magiekunde) + SUM(active_spell_effects.rows[].skill_bonus.Magiekunde) + SUM(active_status_effects.rows[].skill_bonus.Magiekunde)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Wissenstalent.Magiekunde.base_fw + skills.Wissenstalent.Magiekunde.bonus_fw",
+          "value": -3
+        }
+      },
+      "Mechanik": {
+        "attributes": [
+          "Klugheit",
+          "Klugheit",
+          "Fingerfertigkeit"
+        ],
+        "base_fw": {
+          "formula": "talents.Wissenstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Mechanik) + SUM(active_spell_effects.rows[].skill_bonus.Mechanik) + SUM(active_status_effects.rows[].skill_bonus.Mechanik)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Wissenstalent.Mechanik.base_fw + skills.Wissenstalent.Mechanik.bonus_fw",
+          "value": -3
+        }
+      },
+      "Rechnen": {
+        "attributes": [
+          "Klugheit",
+          "Klugheit",
+          "Intuition"
+        ],
+        "base_fw": {
+          "formula": "talents.Wissenstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Rechnen) + SUM(active_spell_effects.rows[].skill_bonus.Rechnen) + SUM(active_status_effects.rows[].skill_bonus.Rechnen)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Wissenstalent.Rechnen.base_fw + skills.Wissenstalent.Rechnen.bonus_fw",
+          "value": -3
+        }
+      },
+      "Rechtskunde": {
+        "attributes": [
+          "Klugheit",
+          "Klugheit",
+          "Intuition"
+        ],
+        "base_fw": {
+          "formula": "talents.Wissenstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Rechtskunde) + SUM(active_spell_effects.rows[].skill_bonus.Rechtskunde) + SUM(active_status_effects.rows[].skill_bonus.Rechtskunde)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Wissenstalent.Rechtskunde.base_fw + skills.Wissenstalent.Rechtskunde.bonus_fw",
+          "value": -3
+        }
+      },
+      "Sagen/Legenden": {
+        "attributes": [
+          "Klugheit",
+          "Klugheit",
+          "Intuition"
+        ],
+        "base_fw": {
+          "formula": "talents.Wissenstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Sagen/Legenden) + SUM(active_spell_effects.rows[].skill_bonus.Sagen/Legenden) + SUM(active_status_effects.rows[].skill_bonus.Sagen/Legenden)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Wissenstalent.Sagen/Legenden.base_fw + skills.Wissenstalent.Sagen/Legenden.bonus_fw",
+          "value": -3
+        }
+      },
+      "Sphärenkunde": {
+        "attributes": [
+          "Klugheit",
+          "Klugheit",
+          "Intuition"
+        ],
+        "base_fw": {
+          "formula": "talents.Wissenstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Sphärenkunde) + SUM(active_spell_effects.rows[].skill_bonus.Sphärenkunde) + SUM(active_status_effects.rows[].skill_bonus.Sphärenkunde)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Wissenstalent.Sphärenkunde.base_fw + skills.Wissenstalent.Sphärenkunde.bonus_fw",
+          "value": -3
+        }
+      },
+      "Sternkunde": {
+        "attributes": [
+          "Klugheit",
+          "Klugheit",
+          "Intuition"
+        ],
+        "base_fw": {
+          "formula": "talents.Wissenstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Sternkunde) + SUM(active_spell_effects.rows[].skill_bonus.Sternkunde) + SUM(active_status_effects.rows[].skill_bonus.Sternkunde)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Wissenstalent.Sternkunde.base_fw + skills.Wissenstalent.Sternkunde.bonus_fw",
+          "value": -3
+        }
+      }
+    },
+    "Handwerkstalent": {
+      "Alchemie": {
+        "attributes": [
+          "Mut",
+          "Klugheit",
+          "Fingerfertigkeit"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Alchemie) + SUM(active_spell_effects.rows[].skill_bonus.Alchemie) + SUM(active_status_effects.rows[].skill_bonus.Alchemie)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.Alchemie.base_fw + skills.Handwerkstalent.Alchemie.bonus_fw",
+          "value": -3
+        }
+      },
+      "Bote/Schiffe": {
+        "attributes": [
+          "Fingerfertigkeit",
+          "Gewandheit",
+          "Körperkraft"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Bote/Schiffe) + SUM(active_spell_effects.rows[].skill_bonus.Bote/Schiffe) + SUM(active_status_effects.rows[].skill_bonus.Bote/Schiffe)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.Bote/Schiffe.base_fw + skills.Handwerkstalent.Bote/Schiffe.bonus_fw",
+          "value": -3
+        }
+      },
+      "Fahrzäuge": {
+        "attributes": [
+          "Charisma",
+          "Fingerfertigkeit",
+          "Konstitution"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Fahrzäuge) + SUM(active_spell_effects.rows[].skill_bonus.Fahrzäuge) + SUM(active_status_effects.rows[].skill_bonus.Fahrzäuge)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.Fahrzäuge.base_fw + skills.Handwerkstalent.Fahrzäuge.bonus_fw",
+          "value": -3
+        }
+      },
+      "Handel": {
+        "attributes": [
+          "Klugheit",
+          "Intuition",
+          "Charisma"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Handel) + SUM(active_spell_effects.rows[].skill_bonus.Handel) + SUM(active_status_effects.rows[].skill_bonus.Handel)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.Handel.base_fw + skills.Handwerkstalent.Handel.bonus_fw",
+          "value": -3
+        }
+      },
+      "HeilkundeGifte": {
+        "attributes": [
+          "Mut",
+          "Intuition",
+          "Intuition"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.HeilkundeGifte) + SUM(active_spell_effects.rows[].skill_bonus.HeilkundeGifte) + SUM(active_status_effects.rows[].skill_bonus.HeilkundeGifte)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.HeilkundeGifte.base_fw + skills.Handwerkstalent.HeilkundeGifte.bonus_fw",
+          "value": -3
+        }
+      },
+      "HeilkundeKrankheiten": {
+        "attributes": [
+          "Mut",
+          "Intuition",
+          "Konstitution"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.HeilkundeKrankheiten) + SUM(active_spell_effects.rows[].skill_bonus.HeilkundeKrankheiten) + SUM(active_status_effects.rows[].skill_bonus.HeilkundeKrankheiten)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.HeilkundeKrankheiten.base_fw + skills.Handwerkstalent.HeilkundeKrankheiten.bonus_fw",
+          "value": -3
+        }
+      },
+      "HeilkundeSeelen": {
+        "attributes": [
+          "Intuition",
+          "Charisma",
+          "Konstitution"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.HeilkundeSeelen) + SUM(active_spell_effects.rows[].skill_bonus.HeilkundeSeelen) + SUM(active_status_effects.rows[].skill_bonus.HeilkundeSeelen)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.HeilkundeSeelen.base_fw + skills.Handwerkstalent.HeilkundeSeelen.bonus_fw",
+          "value": -3
+        }
+      },
+      "HeilkundeWunden": {
+        "attributes": [
+          "Klugheit",
+          "Fingerfertigkeit",
+          "Fingerfertigkeit"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.HeilkundeWunden) + SUM(active_spell_effects.rows[].skill_bonus.HeilkundeWunden) + SUM(active_status_effects.rows[].skill_bonus.HeilkundeWunden)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.HeilkundeWunden.base_fw + skills.Handwerkstalent.HeilkundeWunden.bonus_fw",
+          "value": -3
+        }
+      },
+      "Holzbearbeitung": {
+        "attributes": [
+          "Fingerfertigkeit",
+          "Gewandheit",
+          "Körperkraft"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Holzbearbeitung) + SUM(active_spell_effects.rows[].skill_bonus.Holzbearbeitung) + SUM(active_status_effects.rows[].skill_bonus.Holzbearbeitung)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.Holzbearbeitung.base_fw + skills.Handwerkstalent.Holzbearbeitung.bonus_fw",
+          "value": -3
+        }
+      },
+      "Lebensmittelbearbeitung": {
+        "attributes": [
+          "Intuition",
+          "Fingerfertigkeit",
+          "Fingerfertigkeit"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Lebensmittelbearbeitung) + SUM(active_spell_effects.rows[].skill_bonus.Lebensmittelbearbeitung) + SUM(active_status_effects.rows[].skill_bonus.Lebensmittelbearbeitung)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.Lebensmittelbearbeitung.base_fw + skills.Handwerkstalent.Lebensmittelbearbeitung.bonus_fw",
+          "value": -3
+        }
+      },
+      "Lederbearbeitung": {
+        "attributes": [
+          "Fingerfertigkeit",
+          "Gewandheit",
+          "Konstitution"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Lederbearbeitung) + SUM(active_spell_effects.rows[].skill_bonus.Lederbearbeitung) + SUM(active_status_effects.rows[].skill_bonus.Lederbearbeitung)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.Lederbearbeitung.base_fw + skills.Handwerkstalent.Lederbearbeitung.bonus_fw",
+          "value": -3
+        }
+      },
+      "Malen/Zeichnen": {
+        "attributes": [
+          "Intuition",
+          "Fingerfertigkeit",
+          "Fingerfertigkeit"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Malen/Zeichnen) + SUM(active_spell_effects.rows[].skill_bonus.Malen/Zeichnen) + SUM(active_status_effects.rows[].skill_bonus.Malen/Zeichnen)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.Malen/Zeichnen.base_fw + skills.Handwerkstalent.Malen/Zeichnen.bonus_fw",
+          "value": -3
+        }
+      },
+      "Metallbearbeitung": {
+        "attributes": [
+          "Fingerfertigkeit",
+          "Konstitution",
+          "Körperkraft"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Metallbearbeitung) + SUM(active_spell_effects.rows[].skill_bonus.Metallbearbeitung) + SUM(active_status_effects.rows[].skill_bonus.Metallbearbeitung)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.Metallbearbeitung.base_fw + skills.Handwerkstalent.Metallbearbeitung.bonus_fw",
+          "value": -3
+        }
+      },
+      "Musizieren": {
+        "attributes": [
+          "Charisma",
+          "Fingerfertigkeit",
+          "Konstitution"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Musizieren) + SUM(active_spell_effects.rows[].skill_bonus.Musizieren) + SUM(active_status_effects.rows[].skill_bonus.Musizieren)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.Musizieren.base_fw + skills.Handwerkstalent.Musizieren.bonus_fw",
+          "value": -3
+        }
+      },
+      "Schlösserknacken": {
+        "attributes": [
+          "Intuition",
+          "Fingerfertigkeit",
+          "Fingerfertigkeit"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Schlösserknacken) + SUM(active_spell_effects.rows[].skill_bonus.Schlösserknacken) + SUM(active_status_effects.rows[].skill_bonus.Schlösserknacken)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.Schlösserknacken.base_fw + skills.Handwerkstalent.Schlösserknacken.bonus_fw",
+          "value": -3
+        }
+      },
+      "Steinbearbeitung": {
+        "attributes": [
+          "Fingerfertigkeit",
+          "Fingerfertigkeit",
+          "Körperkraft"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Steinbearbeitung) + SUM(active_spell_effects.rows[].skill_bonus.Steinbearbeitung) + SUM(active_status_effects.rows[].skill_bonus.Steinbearbeitung)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.Steinbearbeitung.base_fw + skills.Handwerkstalent.Steinbearbeitung.bonus_fw",
+          "value": -3
+        }
+      },
+      "Stoffbearbeitung": {
+        "attributes": [
+          "Klugheit",
+          "Fingerfertigkeit",
+          "Fingerfertigkeit"
+        ],
+        "base_fw": {
+          "formula": "talents.Handwerkstalent.wert",
+          "value": -3
+        },
+        "bonus_fw": {
+          "formula": "SUM(learned_abilities.rows[].skill_bonus.Stoffbearbeitung) + SUM(active_spell_effects.rows[].skill_bonus.Stoffbearbeitung) + SUM(active_status_effects.rows[].skill_bonus.Stoffbearbeitung)",
+          "value": 0
+        },
+        "fw": {
+          "formula": "skills.Handwerkstalent.Stoffbearbeitung.base_fw + skills.Handwerkstalent.Stoffbearbeitung.bonus_fw",
+          "value": -3
+        }
+      }
+    }
+  },
+  "equipped_items": {
+    "slot_groups": {
+      "Hand Links": [
+        "Gehalten",
+        "Ring 1",
+        "Ring 2",
+        "Ring 3",
+        "Ring 4",
+        "Ring 5"
+      ],
+      "Hand Rechts": [
+        "Gehalten",
+        "Ring 1",
+        "Ring 2",
+        "Ring 3",
+        "Ring 4",
+        "Ring 5"
+      ],
+      "Sonstige": [
+        "Arm Links",
+        "Arm Rechts",
+        "Kopf",
+        "Helm",
+        "Ohrring 1",
+        "Ohrring 2",
+        "Nacken",
+        "Torso",
+        "Rücken",
+        "Gürtel",
+        "Bein Rechts",
+        "Bein Links",
+        "Fuß Links",
+        "Fuß Rechts"
+      ]
+    },
+    "row_schema": {
+      "ID": "string, Referenz auf ein globales Item (Global/Items)",
+      "slot_group": "string, z.B. 'Hand Links'",
+      "slot": "string, z.B. 'Ring 1'"
+    },
+    "rows": []
+  },
+  "learned_abilities": {
+    "row_schema": {
+      "learned_id": "string, Referenz auf einen globalen Lerneintrag (Global/Learned)"
+    },
+    "rows": []
+  },
+  "active_spell_effects": {
+    "row_schema": {
+      "effect_id": "string, eindeutige Id dieser aktiven Wirkung",
+      "erzeuger_id": "string, char_id des Charakters, der den Effekt erzeugt hat (Caster). NPCs werden dafuer als eigene Charaktere im GM-Account angelegt.",
+      "quelle_id": "string, char_id der Quelle, kann caster oder Item ID sein",
+      "ablaufzeit": "number oder 'bis_mana_ende' - verbleibende Dauer bzw. Bindung an Mana-Versorgung",
+      "zeit_zum_tod": "number|null - falls der Effekt toedlich ist: verbleibende Zeit bis zum Tod, sonst null "
+    },
+    "rows": []
+  },
+  "active_status_effects": {
+    "row_schema": {
+      "ID": "string, eindeutige Id dieses aktiven Status",
+      "ursache": "string, Ursache des Status (z.B. Gift, Fluch, Verletzung)",
+      "ablaufzeit": "number - verbleibende Dauer bis der Status endet",
+      "zeit_zum_tod": "number|null - wie bei active_spell_effects"
+    },
+    "rows": []
+  }
+}

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>D&amp;D Stats API – Testoberfläche</title>
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header>
+  <h1>D&amp;D Stats API – Testoberfläche</h1>
+  <span class="who" id="who"></span>
+  <button class="ghost" id="admin-area" style="display: none">Adminbereich</button>
+  <button class="ghost" id="logout">Abmelden</button>
+</header>
+<div id="layout">
+  <nav id="tabs"></nav>
+  <main id="panel">Lade Endpunkte …</main>
+</div>
+
+<script>
+const session = JSON.parse(sessionStorage.getItem('session') || 'null');
+if (!session) {
+  window.location.replace('/');
+}
+
+let endpoints = [];
+let current = null;
+
+document.getElementById('logout').onclick = () => {
+  sessionStorage.removeItem('session');
+  window.location.href = '/';
+};
+
+if (session && session.mode === 'admin') {
+  const adminButton = document.getElementById('admin-area');
+  adminButton.style.display = '';
+  adminButton.onclick = () => { window.location.href = '/static/admin.html'; };
+}
+
+// Anmeldedaten aus der Session werden in gleichnamige Parameter vorbefüllt.
+function prefillFor(parameterName) {
+  if (!session) return null;
+  if (session.mode === 'admin') {
+    if (parameterName === 'adminpass') return session.adminpass;
+    return null;
+  }
+  if (parameterName === 'user_id' || parameterName === 'userId') return session.userId;
+  if (parameterName === 'username') return session.username;
+  if (parameterName === 'password_hash' || parameterName === 'password_Hash') return session.password;
+  return null;
+}
+
+async function init() {
+  if (!session) return;
+  document.getElementById('who').textContent = session.mode === 'admin'
+    ? 'Angemeldet als: Administrator'
+    : 'Angemeldet als: ' + session.username + ' (' + session.userId + ')';
+
+  const response = await fetch('/api/_endpoints');
+  endpoints = await response.json();
+  const tabs = document.getElementById('tabs');
+  endpoints.forEach((endpoint, index) => {
+    const button = document.createElement('button');
+    button.textContent = endpoint.name;
+    button.onclick = () => select(index);
+    tabs.appendChild(button);
+  });
+  if (endpoints.length) select(0);
+}
+
+function select(index) {
+  current = endpoints[index];
+  [...document.getElementById('tabs').children].forEach((button, i) =>
+    button.classList.toggle('active', i === index));
+
+  const panel = document.getElementById('panel');
+  panel.innerHTML = '';
+
+  const title = document.createElement('h2');
+  title.textContent = 'POST /api/' + current.name;
+  panel.appendChild(title);
+
+  if (!current.parameters.length) {
+    const info = document.createElement('p');
+    info.textContent = 'Keine Parameter.';
+    panel.appendChild(info);
+  }
+
+  current.parameters.forEach(parameter => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'param';
+
+    const label = document.createElement('label');
+    label.textContent = parameter.name;
+    const hint = document.createElement('span');
+    hint.className = 'hint';
+    hint.textContent = parameter.required
+      ? '  (erforderlich)'
+      : '  (optional, Standard: ' + parameter.default + ')';
+    label.appendChild(hint);
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.dataset.name = parameter.name;
+    input.dataset.required = parameter.required;
+    input.placeholder = 'Text oder JSON (z. B. ["a","b"] oder {"k": 1})';
+
+    const prefill = prefillFor(parameter.name);
+    if (prefill !== null) {
+      input.value = prefill;
+      input.classList.add('prefilled');
+      input.dataset.raw = 'true';
+    }
+
+    wrapper.appendChild(label);
+    wrapper.appendChild(input);
+    panel.appendChild(wrapper);
+  });
+
+  const sendButton = document.createElement('button');
+  sendButton.id = 'send';
+  sendButton.textContent = 'Anfrage senden';
+  sendButton.onclick = send;
+  panel.appendChild(sendButton);
+
+  const status = document.createElement('div');
+  status.className = 'status';
+  status.id = 'status';
+  panel.appendChild(status);
+
+  const errorBox = document.createElement('div');
+  errorBox.id = 'errorbox';
+  errorBox.innerHTML = '<h3></h3><div class="msg"></div><pre></pre>';
+  panel.appendChild(errorBox);
+
+  const output = document.createElement('pre');
+  output.id = 'output';
+  output.textContent = '(noch keine Antwort)';
+  panel.appendChild(output);
+}
+
+function parseValue(raw) {
+  const trimmed = raw.trim();
+  try {
+    return JSON.parse(trimmed);
+  } catch (error) {
+    return raw;
+  }
+}
+
+function showError(title, message, detail) {
+  const errorBox = document.getElementById('errorbox');
+  errorBox.style.display = 'block';
+  errorBox.querySelector('h3').textContent = title;
+  errorBox.querySelector('.msg').textContent = message;
+  const pre = errorBox.querySelector('pre');
+  pre.textContent = detail || '';
+  pre.style.display = detail ? 'block' : 'none';
+}
+
+async function send() {
+  const button = document.getElementById('send');
+  const status = document.getElementById('status');
+  const output = document.getElementById('output');
+  const errorBox = document.getElementById('errorbox');
+  const body = {};
+
+  for (const input of document.querySelectorAll('#panel input')) {
+    const raw = input.value;
+    if (raw.trim() === '' && input.dataset.required !== 'true') continue;
+    body[input.dataset.name] = input.dataset.raw === 'true' ? raw : parseValue(raw);
+  }
+
+  button.disabled = true;
+  errorBox.style.display = 'none';
+  status.textContent = 'Sende …';
+  status.className = 'status';
+  try {
+    const response = await fetch('/api/' + current.name, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const text = await response.text();
+    status.textContent = 'HTTP ' + response.status + ' ' + response.statusText;
+    status.className = 'status ' + (response.ok ? 'ok' : 'err');
+
+    let payload = null;
+    try {
+      payload = JSON.parse(text);
+      output.textContent = JSON.stringify(payload, null, 2);
+    } catch (error) {
+      output.textContent = text;
+    }
+
+    if (!response.ok) {
+      if (payload && typeof payload === 'object' && payload.error !== undefined) {
+        const title = payload.exception
+          ? payload.exception + ' (' + payload.exception_module + ')'
+          : 'Fehler';
+        let message = String(payload.error);
+        if (payload.args && payload.args.length) {
+          message += '\nargs: ' + payload.args.join(', ');
+        }
+        if (payload.cause) {
+          message += '\nausgelöst durch: ' + payload.cause;
+        }
+        showError(title, message, payload.traceback);
+      } else {
+        showError('Fehler', text, '');
+      }
+    }
+  } catch (error) {
+    status.textContent = 'Netzwerkfehler';
+    status.className = 'status err';
+    showError(error.name || 'Netzwerkfehler', String(error && error.message ? error.message : error), error.stack || '');
+    output.textContent = String(error);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+init();
+</script>
+</body>
+</html>

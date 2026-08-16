@@ -134,6 +134,10 @@ def listUserCharacters(
 
 def listAllCharacters(user_id: str, username: str, password_hash: str) -> list[str]:
     """List every character ID across all users. Requires GM role."""
+
+    print(f"listAllCharacters called with user_id={user_id}, username={username}, password_hash={password_hash}")
+    print(f"Type of user_id: {type(user_id)}, Type of username: {type(username)}, Type of password_hash: {type(password_hash)}")
+
     role = _require_login(user_id, username, password_hash)
     if role not in MANAGER_ROLES:
         raise PermissionError("Only GM may list all characters")

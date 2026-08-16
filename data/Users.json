@@ -1,13 +1,13 @@
 {
-    "next_id": 36,
+    "next_id": 41,
     "User_gm_1": {
         "username": "spielleiter",
         "password_hash": "DEMO-PLACEHOLDER-NOT-A-REAL-HASH",
         "role": "gm"
     },
-    "User_34": {
-        "username": "Player0",
-        "password_hash": "scrypt:32768:8:1$iKyP8WTU2cgXUlhc$a71e355d743c1c10310bb58f5941a2fa6a99ee0927806dcaec78d2597ca9efc4f6a2fa80cdcbf8fe129f6899b50fceb3142120546829194051b7ab9eb481ef3b",
+    "User_Test_40": {
+        "username": "Test",
+        "password_hash": "Test",
         "role": "player"
     }
 }

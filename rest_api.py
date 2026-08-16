@@ -24,15 +24,19 @@ pointing at `rest_api:app`.
 from __future__ import annotations
 
 import inspect
+import traceback
 from typing import Any, Callable
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 
 import api
 import _global_resources
 import stat_engine
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static", static_url_path="/static")
+
+# Describes every exposed route for the HTML test client (see static/index.html).
+_ENDPOINT_META: list[dict[str, Any]] = []
 
 # Exposed only through the custom wrappers below, not auto-wired.
 _CUSTOM_HANDLED = {"load_and_compute", "validate_all", "TestUsers", "TestForStatSheetTemplate", "TestForGlobalDocuments", "TestForUserFolder"}
@@ -42,12 +46,38 @@ _NOT_ENDPOINTS = {"StatSheetEngine", "FormulaError", "CircularReferenceError", "
 
 def _error_response(error: Exception) -> tuple[Any, int]:
     if isinstance(error, PermissionError):
-        return jsonify({"error": str(error)}), 403
-    if isinstance(error, (ValueError, TypeError)):
-        return jsonify({"error": str(error)}), 400
-    if isinstance(error, FileNotFoundError):
-        return jsonify({"error": str(error)}), 404
-    return jsonify({"error": str(error)}), 500
+        status = 403
+    elif isinstance(error, FileNotFoundError):
+        status = 404
+    elif isinstance(error, (ValueError, TypeError)):
+        status = 400
+    else:
+        status = 500
+    payload = {
+        "error": str(error),
+        "exception": type(error).__name__,
+        "exception_module": type(error).__module__,
+        "args": [repr(argument) for argument in error.args],
+        "traceback": "".join(traceback.format_exception(type(error), error, error.__traceback__)),
+    }
+    if error.__cause__ is not None or error.__context__ is not None:
+        cause = error.__cause__ or error.__context__
+        payload["cause"] = f"{type(cause).__name__}: {cause}"
+    return jsonify(payload), status
+
+
+def _describe(name: str, func: Callable[..., Any] | None, parameters: list[dict[str, Any]] | None = None) -> None:
+    if parameters is None:
+        parameters = []
+        for param_name, parameter in inspect.signature(func).parameters.items():
+            parameters.append(
+                {
+                    "name": param_name,
+                    "required": parameter.default is inspect.Parameter.empty,
+                    "default": None if parameter.default is inspect.Parameter.empty else repr(parameter.default),
+                }
+            )
+    _ENDPOINT_META.append({"name": name, "parameters": parameters})
 
 
 def _make_view(func: Callable[..., Any]) -> Callable[[], Any]:
@@ -77,6 +107,7 @@ for _name in api.__all__:
     if not callable(_func):
         continue
     app.add_url_rule(f"/api/{_name}", endpoint=_name, view_func=_make_view(_func), methods=["POST"])
+    _describe(_name, _func)
 
 
 @app.route("/api/load_and_compute", methods=["POST"])
@@ -100,6 +131,21 @@ def validate_all_view() -> Any:
     except Exception as error:  # noqa: BLE001
         return _error_response(error)
     return jsonify({"status": "ok"})
+
+
+_describe("load_and_compute", None, [{"name": "character_id", "required": True, "default": None}])
+_describe("validate_all", None, [])
+_ENDPOINT_META.sort(key=lambda entry: entry["name"].lower())
+
+
+@app.route("/api/_endpoints", methods=["GET"])
+def endpoints_view() -> Any:
+    return jsonify(_ENDPOINT_META)
+
+
+@app.route("/", methods=["GET"])
+def index_view() -> Any:
+    return send_from_directory(app.static_folder, "index.html")
 
 
 if __name__ == "__main__":

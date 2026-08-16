@@ -23,6 +23,7 @@ from Users import (
     getUserRole,
     loginTestUser,
     deleteUser,
+    tryFindUserID,
 )
 
 # Characters.py -- Charakterverwaltung
@@ -107,6 +108,7 @@ __all__ = [
     "getUserRole",
     "loginTestUser",
     "deleteUser",
+    "tryFindUserID",
     # Characters
     "createCharacter",
     "deleteCharacter",
