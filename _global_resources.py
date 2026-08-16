@@ -33,6 +33,25 @@ def require_manager(user_id: str, username: str, password_hash: str, resource_na
         raise PermissionError(f"Only GM users may manage {resource_name}")
 
 
+def require_user(user_id: str, username: str, password_hash: str) -> None:
+    if not Users.loginTestUser(user_id, username, password_hash):
+        raise PermissionError("Invalid user credentials")
+
+
+def get_user_role(user_id: str) -> str | None:
+    return Users.getUserRole(user_id)
+
+
+def get_user_known_resources(user_id: str, known_field: str) -> set[str]:
+    """Aggregate a known_* field across every character owned by user_id."""
+    owner_folder = user_id.removeprefix("User_")
+    known: set[str] = set()
+    for character_file in (DATA_PATH / "User" / owner_folder).glob("*/Character.json"):
+        character = load_json(character_file)
+        known.update(character.get(known_field, []))
+    return known
+
+
 def find_character(character_id: str) -> tuple[Path, str, dict[str, Any]]:
     for character_file in (DATA_PATH / "User").glob("*/*/Character.json"):
         character = load_json(character_file)
