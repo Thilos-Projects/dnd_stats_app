@@ -139,9 +139,13 @@ def assignItemToCharacter(
     _save_json(ITEMS_PATH, items)
 
 def equipItem(
-    user_id: str, username: str, password_hash: str, item_id: str, character_id: str
+    user_id: str, username: str, password_hash: str, item_id: str, character_id: str,
+    slot_group: str | None = None, slot: str | None = None
 ) -> None:
-    """Mark an assigned item as equipped and add it to the character stat sheet."""
+    """Mark an assigned item as equipped and add it to the character stat sheet.
+
+    slot_group/slot are optional; if given they must name a free slot of the stat sheet.
+    """
     items = _load_json(ITEMS_PATH)
     item = _load_item(items, item_id)
     if item["owner"] != character_id:
@@ -155,9 +159,34 @@ def equipItem(
 
     stat_sheet_path = character_path / "StatSheet.json"
     stat_sheet = _load_json(stat_sheet_path)
-    rows = stat_sheet["equipped_items"]["rows"]
-    if not any(row.get("ID") == item_id for row in rows):
-        rows.append({"ID": item_id})
+    equipped = stat_sheet["equipped_items"]
+    rows = equipped["rows"]
+
+    if (slot_group is None) != (slot is None):
+        raise ValueError("slot_group and slot must be given together")
+    if slot_group is not None:
+        slot_groups = equipped.get("slot_groups", {})
+        if slot_group not in slot_groups:
+            raise ValueError(f"Slot group {slot_group} does not exist")
+        if slot not in slot_groups[slot_group]:
+            raise ValueError(f"Slot {slot} does not exist in {slot_group}")
+        occupied = [
+            row for row in rows
+            if row.get("slot_group") == slot_group and row.get("slot") == slot and row.get("ID") != item_id
+        ]
+        if occupied:
+            raise ValueError(f"Slot {slot_group} / {slot} is already occupied by {occupied[0]['ID']}")
+
+    existing = next((row for row in rows if row.get("ID") == item_id), None)
+    new_row = {"ID": item_id}
+    if slot_group is not None:
+        new_row["slot_group"] = slot_group
+        new_row["slot"] = slot
+    if existing is None:
+        rows.append(new_row)
+    else:
+        existing.clear()
+        existing.update(new_row)
     item["equipped"] = True
     _save_json(stat_sheet_path, stat_sheet)
     _save_json(ITEMS_PATH, items)

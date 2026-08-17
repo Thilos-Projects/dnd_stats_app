@@ -24,6 +24,7 @@ pointing at `rest_api:app`.
 from __future__ import annotations
 
 import inspect
+import os
 import traceback
 from typing import Any, Callable
 
@@ -149,4 +150,8 @@ def index_view() -> Any:
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    # host="0.0.0.0" binds all network interfaces so the API is reachable from other devices;
+    # override via HOST/PORT env vars, e.g. when only LAN access (not the whole internet) is wanted.
+    host = os.environ.get("HOST", "0.0.0.0")
+    port = int(os.environ.get("PORT", "5000"))
+    app.run(host=host, port=port, debug=False)

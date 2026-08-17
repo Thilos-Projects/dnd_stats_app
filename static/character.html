@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>D&amp;D Stats – Charakter</title>
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header>
+  <h1 id="title">Charakter</h1>
+  <span class="who" id="who"></span>
+  <button class="ghost" id="reload">Neu laden</button>
+  <button class="ghost" id="back">Übersicht</button>
+  <button class="ghost" id="logout">Abmelden</button>
+</header>
+
+<nav id="sheet-tabs">
+  <button class="tab active" data-tab="sheet">Statsheet</button>
+  <button class="tab" data-tab="inventory">Inventar</button>
+</nav>
+
+<main id="sheet-page">
+  <div class="status" id="page-status"></div>
+  <div id="errorbox"><h3></h3><div class="msg"></div><pre></pre></div>
+
+  <div id="tab-sheet">
+    <section class="panel">
+      <h2>Basiswerte</h2>
+      <div class="meta-grid" id="meta-grid"></div>
+      <div class="stat-grid" id="stat-grid"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Talente &amp; Skills</h2>
+      <div id="skills"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Ausrüstungsslots</h2>
+      <div id="equipment"></div>
+    </section>
+
+    <section class="panel" id="spells-panel">
+      <h2>Aktive Zaubereffekte</h2>
+    </section>
+
+    <section class="panel" id="status-panel">
+      <h2>Aktive Statuseffekte</h2>
+    </section>
+
+    <section class="panel" id="learned-panel">
+      <h2>Gelernte Fähigkeiten</h2>
+    </section>
+  </div>
+
+  <div id="tab-inventory" style="display: none">
+    <section class="panel">
+      <h2>Inventar</h2>
+      <div class="status" id="inventory-status"></div>
+      <table class="data-table" id="inventory-table">
+        <thead>
+          <tr><th>Item</th><th>ID</th><th>Status</th><th>Slot</th><th class="actions">Aktionen</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Item weitergeben</h2>
+      <p class="hint">Nur nicht ausgerüstete Items an bekannte Charaktere.</p>
+      <div class="inline-form">
+        <select id="transfer-item"></select>
+        <select id="transfer-target"></select>
+        <button class="accent" id="transfer">Weitergeben</button>
+      </div>
+      <div class="status" id="transfer-status"></div>
+    </section>
+  </div>
+</main>
+
+<script>
+const session = JSON.parse(sessionStorage.getItem('session') || 'null');
+if (!session || session.mode !== 'user') {
+  window.location.replace('/');
+}
+
+const characterId = new URLSearchParams(window.location.search).get('id');
+
+let sheet = null;
+let itemCatalog = {};
+let skillCatalog = {};
+let spellCatalog = {};
+let statusCatalog = {};
+let knownSkills = [];
+let knownSpells = [];
+let knownStatus = [];
+let knownCharacters = [];
+
+/* ---------- Grundlagen ---------- */
+
+function credentials(extra) {
+  return Object.assign(
+    { user_id: session.userId, username: session.username, password_hash: session.password },
+    extra || {});
+}
+
+function characterName(id) {
+  return String(id).replace(/^Charakter_/, '');
+}
+
+async function callApi(name, body) {
+  const response = await fetch('/api/' + name, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const text = await response.text();
+  let payload;
+  try { payload = JSON.parse(text); } catch (error) { payload = text; }
+  return { ok: response.ok, status: response.status, payload: payload };
+}
+
+function setStatus(id, text, ok) {
+  const element = document.getElementById(id);
+  element.textContent = text;
+  element.className = 'status ' + (ok ? 'ok' : 'err');
+}
+
+function hideError() {
+  document.getElementById('errorbox').style.display = 'none';
+}
+
+function showError(result) {
+  const payload = result.payload;
+  const errorBox = document.getElementById('errorbox');
+  errorBox.style.display = 'block';
+  errorBox.scrollIntoView({ block: 'nearest' });
+  if (payload && typeof payload === 'object' && payload.error !== undefined) {
+    errorBox.querySelector('h3').textContent = payload.exception
+      ? payload.exception + ' (' + payload.exception_module + ')'
+      : 'Fehler';
+    let message = String(payload.error);
+    if (payload.args && payload.args.length) message += '\nargs: ' + payload.args.join(', ');
+    if (payload.cause) message += '\nausgelöst durch: ' + payload.cause;
+    errorBox.querySelector('.msg').textContent = message;
+    errorBox.querySelector('pre').textContent = payload.traceback || '';
+    errorBox.querySelector('pre').style.display = payload.traceback ? 'block' : 'none';
+  } else {
+    errorBox.querySelector('h3').textContent = 'HTTP ' + result.status;
+    errorBox.querySelector('.msg').textContent = String(payload);
+    errorBox.querySelector('pre').style.display = 'none';
+  }
+}
+
+function number(value) {
+  if (typeof value !== 'number') return String(value);
+  return Number.isInteger(value) ? String(value) : String(Math.round(value * 100) / 100);
+}
+
+function signed(value) {
+  const text = number(value);
+  return typeof value === 'number' && value > 0 ? '+' + text : text;
+}
+
+// Formelfelder liegen als {formula, value} vor.
+function fieldValue(field) {
+  return field && typeof field === 'object' && 'value' in field ? field.value : field;
+}
+
+function fieldFormula(field) {
+  return field && typeof field === 'object' ? field.formula || '' : '';
+}
+
+function element(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+/* ---------- Basiswerte ---------- */
+
+const META_LABELS = {
+  age: 'Alter',
+  magie_speicher: 'Magiespeicher',
+  magische_regeneration: 'Magieregeneration'
+};
+
+const STAT_BREAKDOWN = [
+  ['konst_wert', 'Konstanter Wert'],
+  ['konst_bonus', 'Konst. Bonus (gelernt)'],
+  ['bonus', 'Bonus (Items/Effekte)'],
+  ['min', 'Minimum'],
+  ['max_konst', 'Max. konstant'],
+  ['max_magik', 'Max. magisch'],
+  ['max_goettlich', 'Max. göttlich'],
+  ['malus_for_under', 'Malus unter Min.'],
+  ['malus_for_over', 'Malus über Max.']
+];
+
+function renderMeta(meta) {
+  const grid = document.getElementById('meta-grid');
+  grid.innerHTML = '';
+  Object.keys(meta || {}).forEach(key => {
+    const card = element('div', 'meta-card');
+    card.appendChild(element('div', 'meta-value', number(fieldValue(meta[key]))));
+    card.appendChild(element('div', 'meta-label', META_LABELS[key] || key));
+    card.title = fieldFormula(meta[key]);
+    grid.appendChild(card);
+  });
+}
+
+function renderStats(stats) {
+  const grid = document.getElementById('stat-grid');
+  grid.innerHTML = '';
+  Object.keys(stats || {}).forEach(name => {
+    const stat = stats[name];
+    const card = element('div', 'stat-card');
+
+    const head = element('div', 'stat-head');
+    head.appendChild(element('span', 'stat-name', name));
+    head.appendChild(element('span', 'stat-value', number(fieldValue(stat.wert))));
+    card.appendChild(head);
+
+    const breakdown = element('dl', 'breakdown');
+    STAT_BREAKDOWN.forEach(entry => {
+      if (!(entry[0] in stat)) return;
+      const term = element('dt', null, entry[1]);
+      const definition = element('dd', null, number(fieldValue(stat[entry[0]])));
+      definition.title = fieldFormula(stat[entry[0]]);
+      breakdown.appendChild(term);
+      breakdown.appendChild(definition);
+    });
+    card.appendChild(breakdown);
+    grid.appendChild(card);
+  });
+}
+
+/* ---------- Talente & Skills ---------- */
+
+function renderTalentSummary(name, talent, stats) {
+  const summary = element('summary');
+  summary.appendChild(element('span', 'talent-name', name));
+  if (!talent) return summary;
+
+  const values = element('span', 'talent-values');
+  values.appendChild(element('span', 'talent-total', 'Wert ' + number(fieldValue(talent.wert))));
+  const parts = element('span', 'talent-parts',
+    'Ausgeglichenheit ' + signed(fieldValue(talent.ausgeglichenheit_bonus)) +
+    ' · Bonus ' + signed(fieldValue(talent.bonus)));
+  parts.title = fieldFormula(talent.ausgeglichenheit_bonus);
+  values.appendChild(parts);
+
+  (talent.attributes || []).forEach(attribute => {
+    const chip = element('span', 'chip');
+    const value = stats && stats[attribute] ? number(fieldValue(stats[attribute].wert)) : '?';
+    chip.textContent = attribute + ' ' + value;
+    chip.title = 'Würfelwert des Attributs ' + attribute;
+    values.appendChild(chip);
+  });
+
+  summary.appendChild(values);
+  return summary;
+}
+
+function attributeCell(attributes, stats) {
+  const cell = element('td');
+  (attributes || []).forEach(attribute => {
+    const chip = element('span', 'chip');
+    const value = stats && stats[attribute] ? number(fieldValue(stats[attribute].wert)) : '?';
+    chip.textContent = attribute + ' ' + value;
+    chip.title = 'Würfelwert des Attributs ' + attribute;
+    cell.appendChild(chip);
+  });
+  return cell;
+}
+
+function renderSkills(skills, talents, stats) {
+  const container = document.getElementById('skills');
+  container.innerHTML = '';
+
+  const filter = element('input');
+  filter.type = 'text';
+  filter.placeholder = 'Skills filtern …';
+  filter.className = 'filter';
+  container.appendChild(filter);
+
+  Object.keys(skills || {}).forEach(talentName => {
+    const group = element('details', 'group');
+    group.open = true;
+    group.appendChild(renderTalentSummary(talentName, (talents || {})[talentName], stats));
+
+    const table = element('table', 'data-table');
+    table.innerHTML = '<thead><tr><th>Skill</th><th>Attribute (Würfelwerte)</th>' +
+      '<th>Basis-FW</th><th>Bonus</th><th>FW</th></tr></thead>';
+    const body = element('tbody');
+
+    Object.keys(skills[talentName]).forEach(skillName => {
+      const skill = skills[talentName][skillName];
+      const row = element('tr');
+      row.dataset.name = skillName.toLowerCase();
+      row.appendChild(element('td', null, skillName));
+      row.appendChild(attributeCell(skill.attributes, stats));
+      row.appendChild(element('td', null, number(fieldValue(skill.base_fw))));
+      row.appendChild(element('td', null, signed(fieldValue(skill.bonus_fw))));
+      row.appendChild(element('td', 'strong', number(fieldValue(skill.fw))));
+      body.appendChild(row);
+    });
+
+    table.appendChild(body);
+    group.appendChild(table);
+    container.appendChild(group);
+  });
+
+  filter.oninput = () => {
+    const needle = filter.value.toLowerCase();
+    container.querySelectorAll('tbody tr').forEach(row => {
+      row.style.display = row.dataset.name.includes(needle) ? '' : 'none';
+    });
+  };
+}
+
+/* ---------- Ausrüstung ---------- */
+
+function renderEquipment(equipped) {
+  const container = document.getElementById('equipment');
+  container.innerHTML = '';
+
+  const rows = (equipped && equipped.rows) || [];
+  const bySlot = {};
+  const withoutSlot = [];
+  rows.forEach(row => {
+    if (row.slot_group && row.slot) {
+      bySlot[row.slot_group + '||' + row.slot] = row;
+    } else {
+      withoutSlot.push(row);
+    }
+  });
+
+  const groups = (equipped && equipped.slot_groups) || {};
+  Object.keys(groups).forEach(groupName => {
+    const group = element('div', 'slot-group');
+    group.appendChild(element('h3', null, groupName));
+    const list = element('div', 'slot-list');
+    groups[groupName].forEach(slotName => {
+      list.appendChild(slotCard(slotName, bySlot[groupName + '||' + slotName], groupName));
+    });
+    group.appendChild(list);
+    container.appendChild(group);
+  });
+
+  if (withoutSlot.length) {
+    const group = element('div', 'slot-group');
+    group.appendChild(element('h3', null, 'Ausgerüstet ohne Slot-Zuordnung'));
+    const list = element('div', 'slot-list');
+    withoutSlot.forEach(row => list.appendChild(slotCard('–', row, null)));
+    group.appendChild(list);
+    container.appendChild(group);
+  }
+}
+
+function slotCard(slotName, row, groupName) {
+  const card = element('div', 'slot-card' + (row ? ' filled' : ''));
+  card.appendChild(element('div', 'slot-name', slotName));
+  if (!row) {
+    card.appendChild(equipControl(groupName, slotName));
+    return card;
+  }
+  const item = itemCatalog[row.ID] || {};
+  card.appendChild(element('div', 'slot-item', item.name || row.ID));
+  const button = element('button', 'danger small', 'Ablegen');
+  button.onclick = () => unequip(row.ID, button);
+  card.appendChild(button);
+  return card;
+}
+
+// Freie Items aus dem Inventar, die noch nicht ausgerüstet sind.
+function equippableItems() {
+  return Object.keys(itemCatalog)
+    .filter(itemId => itemCatalog[itemId].owner === characterId && !itemCatalog[itemId].equipped)
+    .map(itemId => Object.assign({ ID: itemId }, itemCatalog[itemId]));
+}
+
+function equipControl(groupName, slotName) {
+  const wrapper = element('div', 'slot-equip');
+  const items = equippableItems();
+  if (!items.length) {
+    wrapper.appendChild(element('div', 'slot-empty', 'leer'));
+    return wrapper;
+  }
+
+  const select = element('select');
+  const placeholder = element('option', null, 'leer – Item wählen');
+  placeholder.value = '';
+  select.appendChild(placeholder);
+  items.forEach(item => {
+    const option = element('option', null, item.name || item.ID);
+    option.value = item.ID;
+    select.appendChild(option);
+  });
+
+  const button = element('button', 'accent small', 'Ausrüsten');
+  button.onclick = () => {
+    if (!select.value) return;
+    equip(select.value, groupName, slotName, button);
+  };
+
+  wrapper.appendChild(select);
+  wrapper.appendChild(button);
+  return wrapper;
+}
+
+async function equip(itemId, slotGroup, slot, button) {
+  hideError();
+  button.disabled = true;
+  const body = credentials({ item_id: itemId, character_id: characterId });
+  if (slotGroup && slot) {
+    body.slot_group = slotGroup;
+    body.slot = slot;
+  }
+  const result = await callApi('equipItem', body);
+  if (!result.ok) {
+    showError(result);
+    button.disabled = false;
+    return;
+  }
+  await loadAll();
+}
+
+async function unequip(itemId, button) {
+  hideError();
+  button.disabled = true;
+  const result = await callApi('unequipItem', credentials({ item_id: itemId, character_id: characterId }));
+  if (!result.ok) {
+    showError(result);
+    button.disabled = false;
+    return;
+  }
+  await loadAll();
+}
+
+/* ---------- Effekt-/Fähigkeitslisten ---------- */
+
+function renderRowSection(config) {
+  const panel = document.getElementById(config.panelId);
+  panel.querySelectorAll(':scope > *:not(h2)').forEach(node => node.remove());
+
+  const rows = (config.section && config.section.rows) || [];
+  const activeIds = rows.map(row => row.ID);
+
+  const addRow = element('div', 'inline-form');
+  const select = element('select');
+  const available = config.knownIds.filter(id => !activeIds.includes(id));
+  if (!available.length) {
+    const option = element('option', null, 'Nichts Bekanntes verfügbar');
+    option.value = '';
+    select.appendChild(option);
+    select.disabled = true;
+  } else {
+    available.forEach(id => {
+      const entry = config.catalog[id] || {};
+      const option = element('option', null, (entry.name || id) + ' (' + id + ')');
+      option.value = id;
+      select.appendChild(option);
+    });
+  }
+  const addButton = element('button', 'accent', config.addLabel);
+  addButton.onclick = async () => {
+    if (!select.value) return;
+    hideError();
+    addButton.disabled = true;
+    const body = credentials({ character_id: characterId });
+    body[config.idParam] = select.value;
+    const result = await callApi(config.addEndpoint, body);
+    addButton.disabled = false;
+    if (!result.ok) { showError(result); return; }
+    await loadAll();
+  };
+  addRow.appendChild(select);
+  addRow.appendChild(addButton);
+  panel.appendChild(addRow);
+
+  if (config.filterable) {
+    const filter = element('input');
+    filter.type = 'text';
+    filter.className = 'filter';
+    filter.placeholder = 'Liste filtern …';
+    filter.oninput = () => {
+      const needle = filter.value.toLowerCase();
+      panel.querySelectorAll('tbody tr').forEach(row => {
+        row.style.display = row.dataset.name.includes(needle) ? '' : 'none';
+      });
+    };
+    panel.appendChild(filter);
+  }
+
+  if (!rows.length) {
+    panel.appendChild(element('p', 'hint', 'Aktuell nichts aktiv.'));
+    return;
+  }
+
+  const wrapper = element('div', config.filterable ? 'scroll-list' : '');
+  const table = element('table', 'data-table');
+  table.innerHTML = '<thead><tr><th>Name</th><th>ID</th><th>Details</th>' +
+    '<th class="actions">Aktion</th></tr></thead>';
+  const body = element('tbody');
+
+  rows.forEach(row => {
+    const entry = config.catalog[row.ID] || {};
+    const name = entry.name || row.ID;
+    const tableRow = element('tr');
+    tableRow.dataset.name = name.toLowerCase();
+
+    tableRow.appendChild(element('td', 'strong', name));
+    tableRow.appendChild(element('td', 'mono', row.ID));
+
+    const details = [];
+    if (row.ablaufzeit !== undefined) details.push('Ablaufzeit: ' + row.ablaufzeit);
+    if (row.zeit_zum_tod !== undefined && row.zeit_zum_tod !== null) details.push('Zeit bis Tod: ' + row.zeit_zum_tod);
+    if (row.ursache) details.push('Ursache: ' + row.ursache);
+    if (row.erzeuger_id) details.push('Erzeuger: ' + row.erzeuger_id);
+    const description = entry.beschreibung || entry.description || '';
+    const detailCell = element('td', 'muted-cell', details.join(' · ') || description);
+    detailCell.title = description;
+    tableRow.appendChild(detailCell);
+
+    const actionCell = element('td', 'actions');
+    const removeButton = element('button', 'danger small', config.removeLabel);
+    removeButton.onclick = async () => {
+      hideError();
+      removeButton.disabled = true;
+      const requestBody = credentials({ character_id: characterId });
+      requestBody[config.idParam] = row.ID;
+      const result = await callApi(config.removeEndpoint, requestBody);
+      if (!result.ok) { showError(result); removeButton.disabled = false; return; }
+      await loadAll();
+    };
+    actionCell.appendChild(removeButton);
+    tableRow.appendChild(actionCell);
+
+    body.appendChild(tableRow);
+  });
+
+  table.appendChild(body);
+  wrapper.appendChild(table);
+  panel.appendChild(wrapper);
+}
+
+/* ---------- Inventar ---------- */
+
+function inventoryItems() {
+  return Object.keys(itemCatalog)
+    .filter(itemId => itemCatalog[itemId].owner === characterId)
+    .map(itemId => Object.assign({ ID: itemId }, itemCatalog[itemId]));
+}
+
+function equippedRow(itemId) {
+  const rows = (sheet && sheet.equipped_items && sheet.equipped_items.rows) || [];
+  return rows.find(row => row.ID === itemId) || null;
+}
+
+function freeSlots() {
+  const equipped = (sheet && sheet.equipped_items) || {};
+  const groups = equipped.slot_groups || {};
+  const rows = equipped.rows || [];
+  const free = [];
+  Object.keys(groups).forEach(groupName => {
+    groups[groupName].forEach(slotName => {
+      const taken = rows.some(row => row.slot_group === groupName && row.slot === slotName);
+      if (!taken) free.push({ group: groupName, slot: slotName });
+    });
+  });
+  return free;
+}
+
+function renderInventory() {
+  const body = document.querySelector('#inventory-table tbody');
+  body.innerHTML = '';
+  const items = inventoryItems();
+  const slots = freeSlots();
+
+  items.forEach(item => {
+    const row = element('tr');
+    row.appendChild(element('td', 'strong', item.name || item.ID));
+    row.appendChild(element('td', 'mono', item.ID));
+    row.appendChild(element('td', null, item.equipped ? 'ausgerüstet' : 'im Inventar'));
+
+    const slotCell = element('td');
+    let slotSelect = null;
+    if (item.equipped) {
+      const equippedAt = equippedRow(item.ID);
+      slotCell.textContent = equippedAt && equippedAt.slot
+        ? equippedAt.slot_group + ' / ' + equippedAt.slot
+        : 'ohne Slot';
+    } else {
+      slotSelect = element('select');
+      const none = element('option', null, 'ohne Slot');
+      none.value = '';
+      slotSelect.appendChild(none);
+      slots.forEach(entry => {
+        const option = element('option', null, entry.group + ' / ' + entry.slot);
+        option.value = entry.group + '||' + entry.slot;
+        slotSelect.appendChild(option);
+      });
+      slotCell.appendChild(slotSelect);
+    }
+    row.appendChild(slotCell);
+
+    const actionCell = element('td', 'actions');
+    const button = element('button', item.equipped ? 'danger small' : 'accent small',
+      item.equipped ? 'Ablegen' : 'Ausrüsten');
+    button.onclick = async () => {
+      if (item.equipped) {
+        await unequip(item.ID, button);
+        return;
+      }
+      const chosen = slotSelect.value ? slotSelect.value.split('||') : [null, null];
+      await equip(item.ID, chosen[0], chosen[1], button);
+    };
+    actionCell.appendChild(button);
+    row.appendChild(actionCell);
+    body.appendChild(row);
+  });
+
+  setStatus('inventory-status', items.length ? items.length + ' Item(s).' : 'Inventar ist leer.', true);
+
+  const itemSelect = document.getElementById('transfer-item');
+  itemSelect.innerHTML = '';
+  items.filter(item => !item.equipped).forEach(item => {
+    const option = element('option', null, (item.name || item.ID) + ' (' + item.ID + ')');
+    option.value = item.ID;
+    itemSelect.appendChild(option);
+  });
+
+  const targetSelect = document.getElementById('transfer-target');
+  targetSelect.innerHTML = '';
+  knownCharacters.forEach(id => {
+    const option = element('option', null, characterName(id));
+    option.value = id;
+    targetSelect.appendChild(option);
+  });
+
+  const transferButton = document.getElementById('transfer');
+  transferButton.disabled = !itemSelect.options.length || !targetSelect.options.length;
+}
+
+async function transferItem() {
+  const itemId = document.getElementById('transfer-item').value;
+  const targetId = document.getElementById('transfer-target').value;
+  if (!itemId || !targetId) return;
+
+  hideError();
+  const button = document.getElementById('transfer');
+  button.disabled = true;
+  setStatus('transfer-status', 'Übertrage …', true);
+  const result = await callApi('moveItemBetweenCharacters', credentials({
+    item_id: itemId,
+    from_character_id: characterId,
+    to_character_id: targetId
+  }));
+  button.disabled = false;
+  if (!result.ok) {
+    setStatus('transfer-status', 'Weitergabe fehlgeschlagen.', false);
+    showError(result);
+    return;
+  }
+  setStatus('transfer-status', 'Item weitergegeben an ' + characterName(targetId) + '.', true);
+  await loadAll();
+}
+
+/* ---------- Laden ---------- */
+
+function catalogOf(result) {
+  return result.ok && result.payload && typeof result.payload === 'object' ? result.payload : {};
+}
+
+function listOf(result) {
+  return result.ok && Array.isArray(result.payload) ? result.payload : [];
+}
+
+async function loadAll() {
+  hideError();
+  setStatus('page-status', 'Lade Charakterdaten …', true);
+
+  const sheetResult = await callApi('load_and_compute', { character_id: characterId });
+  if (!sheetResult.ok) {
+    setStatus('page-status', 'Statsheet konnte nicht berechnet werden.', false);
+    showError(sheetResult);
+    return;
+  }
+  sheet = sheetResult.payload;
+
+  const [items, skills, spells, statuses, kSkills, kSpells, kStatus, kCharacters] = await Promise.all([
+    callApi('ListAllItems', credentials()),
+    callApi('listAllSkills', credentials()),
+    callApi('listAllSpellEffects', credentials()),
+    callApi('listAllStatusEffects', credentials()),
+    callApi('getKnownSkills', credentials({ character_id: characterId })),
+    callApi('getKnownSpellEffects', credentials({ character_id: characterId })),
+    callApi('getKnownStatusEffects', credentials({ character_id: characterId })),
+    callApi('getKnownCharacters', credentials({ character_id: characterId }))
+  ]);
+
+  itemCatalog = catalogOf(items);
+  skillCatalog = catalogOf(skills);
+  spellCatalog = catalogOf(spells);
+  statusCatalog = catalogOf(statuses);
+  knownSkills = listOf(kSkills);
+  knownSpells = listOf(kSpells);
+  knownStatus = listOf(kStatus);
+  knownCharacters = listOf(kCharacters);
+
+  renderMeta(sheet.meta);
+  renderStats(sheet.stats);
+  renderSkills(sheet.skills, sheet.talents, sheet.stats);
+  renderEquipment(sheet.equipped_items);
+
+  renderRowSection({
+    panelId: 'spells-panel',
+    section: sheet.active_spell_effects,
+    catalog: spellCatalog,
+    knownIds: knownSpells,
+    idParam: 'spell_effect_id',
+    addEndpoint: 'assignSpellEffectToCharacter',
+    removeEndpoint: 'removeSpellEffectFromCharacter',
+    addLabel: 'Zauber aktivieren',
+    removeLabel: 'Beenden',
+    filterable: true
+  });
+
+  renderRowSection({
+    panelId: 'status-panel',
+    section: sheet.active_status_effects,
+    catalog: statusCatalog,
+    knownIds: knownStatus,
+    idParam: 'status_effect_id',
+    addEndpoint: 'assignStatusEffectToCharacter',
+    removeEndpoint: 'removeStatusEffectFromCharacter',
+    addLabel: 'Status hinzufügen',
+    removeLabel: 'Entfernen',
+    filterable: true
+  });
+
+  renderRowSection({
+    panelId: 'learned-panel',
+    section: sheet.learned_abilities,
+    catalog: skillCatalog,
+    knownIds: knownSkills,
+    idParam: 'skill_id',
+    addEndpoint: 'assignSkillToCharacter',
+    removeEndpoint: 'removeSkillFromCharacter',
+    addLabel: 'Fähigkeit lernen',
+    removeLabel: 'Verlernen',
+    filterable: true
+  });
+
+  renderInventory();
+  setStatus('page-status', 'Stand: ' + new Date().toLocaleTimeString(), true);
+}
+
+/* ---------- Seitensteuerung ---------- */
+
+document.getElementById('logout').onclick = () => {
+  sessionStorage.removeItem('session');
+  window.location.href = '/';
+};
+document.getElementById('back').onclick = () => {
+  window.location.href = session.role === 'gm' ? '/static/gm.html' : '/static/player.html';
+};
+document.getElementById('reload').onclick = loadAll;
+document.getElementById('transfer').onclick = transferItem;
+
+document.querySelectorAll('#sheet-tabs .tab').forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll('#sheet-tabs .tab').forEach(other =>
+      other.classList.toggle('active', other === tab));
+    document.getElementById('tab-sheet').style.display = tab.dataset.tab === 'sheet' ? '' : 'none';
+    document.getElementById('tab-inventory').style.display = tab.dataset.tab === 'inventory' ? '' : 'none';
+  };
+});
+
+if (session) {
+  document.getElementById('who').textContent =
+    session.username + ' (' + session.userId + ', Rolle: ' + session.role + ')';
+  if (!characterId) {
+    setStatus('page-status', 'Kein Charakter ausgewählt.', false);
+  } else {
+    document.getElementById('title').textContent = characterName(characterId);
+    loadAll();
+  }
+}
+</script>
+</body>
+</html>

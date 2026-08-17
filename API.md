@@ -83,6 +83,11 @@ Listet Charakter-IDs eines anderen Benutzers.
 Listet alle Charakter-IDs aller Benutzer.
 - **Rechte:** nur GM/Admin. Sonst `PermissionError`.
 
+### `listAllCharactersByUser(user_id, username, password_hash) -> dict[str, list[str]]`
+Wie `listAllCharacters`, aber nach Benutzer gruppiert: `{"User_1": ["Charakter_x", ...], ...}`.
+Benutzer ohne Charaktere erscheinen mit leerer Liste.
+- **Rechte:** nur GM/Admin. Sonst `PermissionError`.
+
 ### `getKnownCharacters(user_id, username, password_hash, character_id) -> list[str]`
 Liest die Liste `known_Charakters` eines Charakters.
 - **Rechte:** Eigentümer des Charakters ODER GM/Admin.
@@ -154,12 +159,15 @@ Weist ein noch nicht zugewiesenes Item einem Charakter-Inventar zu.
 - **Fehler:** `PermissionError`; `ValueError`, wenn Item bereits zugewiesen ist, Charakter nicht
   existiert oder Item schon im Inventar liegt.
 
-### `equipItem(user_id, username, password_hash, item_id, character_id) -> None`
+### `equipItem(user_id, username, password_hash, item_id, character_id, slot_group=None, slot=None) -> None`
 Markiert ein zugewiesenes Item als ausgerüstet und trägt es in `StatSheet.json` unter
 `equipped_items.rows` ein (idempotent — mehrfacher Aufruf ist unschädlich).
+`slot_group`/`slot` sind optional und nur gemeinsam erlaubt; sie müssen einem Slot aus
+`equipped_items.slot_groups` entsprechen und legen den Ablageort fest. Ein erneuter Aufruf mit
+anderem Slot verschiebt das Item.
 - **Rechte:** Charaktereigentümer ODER GM/Admin.
-- **Fehler:** `PermissionError`; `ValueError`, wenn Item nicht diesem Charakter gehört oder nicht
-  im Inventar liegt.
+- **Fehler:** `PermissionError`; `ValueError`, wenn Item nicht diesem Charakter gehört, nicht
+  im Inventar liegt, der Slot unbekannt ist oder bereits belegt ist.
 
 ### `unequipItem(user_id, username, password_hash, item_id, character_id) -> None`
 Entfernt ein Item aus `equipped_items.rows` und setzt das Flag `equipped` zurück.

@@ -1,13 +1,8 @@
 {
-    "next_id": 41,
-    "User_gm_1": {
-        "username": "spielleiter",
-        "password_hash": "DEMO-PLACEHOLDER-NOT-A-REAL-HASH",
+    "next_id": 2,
+    "User_GM_1": {
+        "username": "GM",
+        "password_hash": "GM",
         "role": "gm"
-    },
-    "User_Test_40": {
-        "username": "Test",
-        "password_hash": "Test",
-        "role": "player"
     }
 }

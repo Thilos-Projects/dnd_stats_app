@@ -148,6 +148,18 @@ def listAllCharacters(user_id: str, username: str, password_hash: str) -> list[s
             characters.extend(_characters_in_user_folder(user_path))
     return characters
 
+def listAllCharactersByUser(user_id: str, username: str, password_hash: str) -> dict[str, list[str]]:
+    """Map every user ID to its character IDs. Requires GM role."""
+    role = _require_login(user_id, username, password_hash)
+    if role not in MANAGER_ROLES:
+        raise PermissionError("Only GM may list all characters")
+
+    by_user: dict[str, list[str]] = {}
+    for user_path in sorted(USER_ROOT.iterdir()):
+        if user_path.is_dir():
+            by_user[f"User_{user_path.name}"] = _characters_in_user_folder(user_path)
+    return by_user
+
 def _get_known_list(
     user_id: str,
     username: str,

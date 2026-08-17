@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>D&amp;D Stats – GM</title>
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header>
+  <h1>GM-Ansicht</h1>
+  <span class="who" id="who"></span>
+  <button class="ghost" id="reload">Neu laden</button>
+  <button class="ghost" id="console">API-Konsole</button>
+  <button class="ghost" id="logout">Abmelden</button>
+</header>
+
+<nav id="sheet-tabs">
+  <button class="tab active" data-tab="own">Meine Charaktere</button>
+  <button class="tab" data-tab="all">Alle Benutzer &amp; Charaktere</button>
+  <button class="tab" data-tab="create">Erstellen &amp; Verwalten</button>
+</nav>
+
+<main id="sheet-page">
+  <div class="status" id="page-status"></div>
+  <div id="errorbox"><h3></h3><div class="msg"></div><pre></pre></div>
+
+  <div id="tab-own">
+    <section class="panel">
+      <h2>Eigene Charaktere</h2>
+      <ul class="character-list" id="own-list"></ul>
+      <div class="status" id="own-status"></div>
+    </section>
+  </div>
+
+  <div id="tab-all" style="display: none">
+    <section class="panel">
+      <h2>Benutzer und Charaktere</h2>
+      <div class="inline-form">
+        <select id="user-filter"></select>
+        <input type="text" id="all-filter" class="filter" placeholder="Charakter filtern …" style="margin: 0">
+      </div>
+      <table class="data-table" id="all-table">
+        <thead><tr><th>Benutzer</th><th>Charakter</th><th>ID</th><th class="actions">Aktion</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="status" id="all-status"></div>
+    </section>
+  </div>
+
+  <div id="tab-create" style="display: none">
+    <div id="forms"></div>
+
+    <section class="panel">
+      <h2>Bekanntes verwalten</h2>
+      <p class="hint">Ersetzt die komplette <code>known_*</code>-Liste des gewählten Charakters.</p>
+      <div class="inline-form">
+        <select id="known-character"></select>
+        <select id="known-type">
+          <option value="Skills">Skills</option>
+          <option value="SpellEffects">Zaubereffekte</option>
+          <option value="StatusEffects">Statuseffekte</option>
+          <option value="Characters">Charaktere</option>
+        </select>
+        <button id="known-load">Laden</button>
+        <button class="accent" id="known-save">Speichern</button>
+      </div>
+      <div class="scroll-list" id="known-list"></div>
+      <div class="status" id="known-status"></div>
+    </section>
+  </div>
+</main>
+
+<script>
+const session = JSON.parse(sessionStorage.getItem('session') || 'null');
+if (!session || session.mode !== 'user') {
+  window.location.replace('/');
+}
+
+const STAT_FIELDS = ['Mut', 'Klugheit', 'Intuition', 'Charisma', 'Fingerfertigkeit', 'Gewandheit', 'Konstitution', 'Körperkraft'];
+const ITEM_STAT_FIELDS = STAT_FIELDS.concat(['MagieSpeicher', 'MagieRegeneration']);
+const TALENT_FIELDS = ['Körpertalent', 'Geseltschaftstalent', 'Naturtalent', 'Wissenstalent', 'Handwerkstalent'];
+const SKILL_FIELDS = ['Fliegen', 'Gaukelei', 'Klettern', 'Körperbeherschung', 'Kraftakt', 'Reiten', 'Schwimmen', 'Selbstbeherschung', 'Singen', 'Sinnesschärfe', 'Tanzen', 'Taschendiebstal', 'Verbergen', 'Zechen', 'Bekehren/Überzeugen', 'Betöhren', 'Einschüchtern', 'Etikette', 'Gassenwissen', 'Menschenkenntniss', 'Überreden', 'Verkleiden', 'Willenskraft', 'Fährtensuche', 'Fesseln', 'Fischen/Angeln', 'Orrientierung', 'Pflanzenkunde', 'Tierkunde', 'Wildnisleben', 'Brett/Glücksspiel', 'Geographie', 'Götter/Kulte', 'Kriegstkunst', 'Magiekunde', 'Mechanik', 'Rechnen', 'Rechtskunde', 'Sagen/Legenden', 'Sphärenkunde', 'Sternkunde', 'Alchemie', 'Bote/Schiffe', 'Fahrzäuge', 'Handel', 'HeilkundeGifte', 'HeilkundeKrankheiten', 'HeilkundeSeelen', 'HeilkundeWunden', 'Holzbearbeitung', 'Lebensmittelbearbeitung', 'Lederbearbeitung', 'Malen/Zeichnen', 'Metallbearbeitung', 'Musizieren', 'Schlösserknacken', 'Steinbearbeitung', 'Stoffbearbeitung'];
+
+let charactersByUser = {};
+let ownCharacters = [];
+let allCharacters = [];
+let itemCatalog = {};
+let skillCatalog = {};
+let spellCatalog = {};
+let statusCatalog = {};
+
+/* ---------- Grundlagen ---------- */
+
+function credentials(extra) {
+  return Object.assign(
+    { user_id: session.userId, username: session.username, password_hash: session.password },
+    extra || {});
+}
+
+function characterName(id) {
+  return String(id).replace(/^Charakter_/, '');
+}
+
+async function callApi(name, body) {
+  const response = await fetch('/api/' + name, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const text = await response.text();
+  let payload;
+  try { payload = JSON.parse(text); } catch (error) { payload = text; }
+  return { ok: response.ok, status: response.status, payload: payload };
+}
+
+function setStatus(id, text, ok) {
+  const element = document.getElementById(id);
+  element.textContent = text;
+  element.className = 'status ' + (ok ? 'ok' : 'err');
+}
+
+function hideError() {
+  document.getElementById('errorbox').style.display = 'none';
+}
+
+function showError(result) {
+  const payload = result.payload;
+  const errorBox = document.getElementById('errorbox');
+  errorBox.style.display = 'block';
+  if (payload && typeof payload === 'object' && payload.error !== undefined) {
+    errorBox.querySelector('h3').textContent = payload.exception
+      ? payload.exception + ' (' + payload.exception_module + ')'
+      : 'Fehler';
+    let message = String(payload.error);
+    if (payload.args && payload.args.length) message += '\nargs: ' + payload.args.join(', ');
+    if (payload.cause) message += '\nausgelöst durch: ' + payload.cause;
+    errorBox.querySelector('.msg').textContent = message;
+    errorBox.querySelector('pre').textContent = payload.traceback || '';
+    errorBox.querySelector('pre').style.display = payload.traceback ? 'block' : 'none';
+  } else {
+    errorBox.querySelector('h3').textContent = 'HTTP ' + result.status;
+    errorBox.querySelector('.msg').textContent = String(payload);
+    errorBox.querySelector('pre').style.display = 'none';
+  }
+}
+
+function element(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function option(value, label) {
+  const node = element('option', null, label);
+  node.value = value;
+  return node;
+}
+
+function zeroTemplate(fields) {
+  const template = {};
+  fields.forEach(field => { template[field] = 0; });
+  return JSON.stringify(template, null, 2);
+}
+
+/* ---------- Charakterlisten ---------- */
+
+function renderOwn() {
+  const list = document.getElementById('own-list');
+  list.innerHTML = '';
+  ownCharacters.forEach(characterId => {
+    const item = element('li');
+    const link = element('a', null, characterName(characterId));
+    link.href = '/static/character.html?id=' + encodeURIComponent(characterId);
+    item.appendChild(link);
+    item.appendChild(element('span', 'muted', characterId));
+    list.appendChild(item);
+  });
+  setStatus('own-status', ownCharacters.length
+    ? ownCharacters.length + ' eigene Charakter(e).'
+    : 'Noch keine eigenen Charaktere.', true);
+}
+
+function renderAll() {
+  const userFilter = document.getElementById('user-filter');
+  const selected = userFilter.value;
+  userFilter.innerHTML = '';
+  userFilter.appendChild(option('', 'Alle Benutzer'));
+  Object.keys(charactersByUser).forEach(userId => {
+    userFilter.appendChild(option(userId, userId + ' (' + charactersByUser[userId].length + ')'));
+  });
+  userFilter.value = selected || '';
+
+  drawAllRows();
+}
+
+function drawAllRows() {
+  const body = document.querySelector('#all-table tbody');
+  body.innerHTML = '';
+  const userFilter = document.getElementById('user-filter').value;
+  const needle = document.getElementById('all-filter').value.toLowerCase();
+  let count = 0;
+
+  Object.keys(charactersByUser).forEach(userId => {
+    if (userFilter && userId !== userFilter) return;
+    charactersByUser[userId].forEach(characterId => {
+      if (needle && !characterId.toLowerCase().includes(needle)) return;
+      const row = element('tr');
+      row.appendChild(element('td', 'mono', userId));
+      row.appendChild(element('td', 'strong', characterName(characterId)));
+      row.appendChild(element('td', 'mono', characterId));
+
+      const actionCell = element('td', 'actions');
+      const button = element('button', 'small', 'Öffnen');
+      button.onclick = () => {
+        window.location.href = '/static/character.html?id=' + encodeURIComponent(characterId);
+      };
+      actionCell.appendChild(button);
+      row.appendChild(actionCell);
+      body.appendChild(row);
+      count += 1;
+    });
+  });
+
+  setStatus('all-status', count + ' Charakter(e) angezeigt.', true);
+}
+
+/* ---------- Formulare ---------- */
+
+const FORMS = [
+  {
+    title: 'Charakter erstellen',
+    endpoint: 'createCharacter',
+    hint: 'Legt einen Charakter im eigenen GM-Ordner an (z. B. für NPCs).',
+    fields: [
+      { name: 'folder_name', label: 'Ordnername', type: 'text' },
+      { name: 'display_name', label: 'Anzeigename', type: 'text' }
+    ]
+  },
+  {
+    title: 'Item erstellen',
+    endpoint: 'createItem',
+    fields: [
+      { name: 'name', label: 'Name', type: 'text' },
+      { name: 'description', label: 'Beschreibung', type: 'text' },
+      { name: 'stat_bonus', label: 'stat_bonus', type: 'json', template: ITEM_STAT_FIELDS }
+    ]
+  },
+  {
+    title: 'Skill erstellen',
+    endpoint: 'createSkill',
+    hint: 'Skills sind die lernbaren Fähigkeiten (learned_abilities).',
+    fields: [
+      { name: 'name', label: 'Name', type: 'text' },
+      { name: 'beschreibung', label: 'Beschreibung', type: 'text' },
+      { name: 'alters_anstieg', label: 'Altersanstieg', type: 'number' },
+      { name: 'stat_bonus', label: 'stat_bonus', type: 'json', template: STAT_FIELDS },
+      { name: 'talent_bonus', label: 'talent_bonus', type: 'json', template: TALENT_FIELDS },
+      { name: 'skill_bonus', label: 'skill_bonus', type: 'json', template: SKILL_FIELDS }
+    ]
+  },
+  {
+    title: 'Zaubereffekt erstellen',
+    endpoint: 'createSpellEffect',
+    fields: [
+      { name: 'name', label: 'Name', type: 'text' },
+      { name: 'description', label: 'Beschreibung', type: 'text' },
+      { name: 'default_duration', label: 'Standarddauer', type: 'number' },
+      { name: 'default_time_to_death', label: 'Zeit bis Tod', type: 'number' },
+      { name: 'stat_bonus', label: 'stat_bonus', type: 'json', template: STAT_FIELDS },
+      { name: 'talent_bonus', label: 'talent_bonus', type: 'json', template: TALENT_FIELDS },
+      { name: 'skill_bonus', label: 'skill_bonus', type: 'json', template: SKILL_FIELDS }
+    ]
+  },
+  {
+    title: 'Statuseffekt erstellen',
+    endpoint: 'createStatusEffect',
+    fields: [
+      { name: 'name', label: 'Name', type: 'text' },
+      { name: 'beschreibung', label: 'Beschreibung', type: 'text' },
+      { name: 'default_duration', label: 'Standarddauer', type: 'number' },
+      { name: 'default_time_to_death', label: 'Zeit bis Tod', type: 'number' },
+      { name: 'stat_bonus', label: 'stat_bonus', type: 'json', template: STAT_FIELDS },
+      { name: 'talent_bonus', label: 'talent_bonus', type: 'json', template: TALENT_FIELDS }
+    ]
+  },
+  {
+    title: 'Item einem Charakter zuweisen',
+    endpoint: 'assignItemToCharacter',
+    fields: [
+      { name: 'item_id', label: 'Item', type: 'select', source: 'items' },
+      { name: 'character_id', label: 'Charakter', type: 'select', source: 'characters' }
+    ]
+  },
+  {
+    title: 'Item von einem Charakter entfernen',
+    endpoint: 'removeItemFromCharacter',
+    hint: 'Nur für nicht ausgerüstete Items.',
+    fields: [
+      { name: 'item_id', label: 'Item', type: 'select', source: 'items' },
+      { name: 'character_id', label: 'Charakter', type: 'select', source: 'characters' }
+    ]
+  },
+  {
+    title: 'Charakter löschen',
+    endpoint: 'deleteCharacter',
+    fields: [
+      { name: 'character_id', label: 'Charakter', type: 'select', source: 'characters' }
+    ]
+  }
+];
+
+function sourceOptions(source) {
+  if (source === 'characters') {
+    return allCharacters.map(id => [id, characterName(id) + ' (' + id + ')']);
+  }
+  if (source === 'items') {
+    return Object.keys(itemCatalog).map(id => [id, (itemCatalog[id].name || id) + ' (' + id + ')']);
+  }
+  return [];
+}
+
+function renderForms() {
+  const container = document.getElementById('forms');
+  container.innerHTML = '';
+
+  FORMS.forEach((form, index) => {
+    const panel = element('section', 'panel');
+    panel.appendChild(element('h2', null, form.title));
+    if (form.hint) panel.appendChild(element('p', 'hint', form.hint));
+
+    const inputs = {};
+    form.fields.forEach(field => {
+      const wrapper = element('div', 'field');
+      const label = element('label', null, field.label);
+      wrapper.appendChild(label);
+
+      let input;
+      if (field.type === 'select') {
+        input = element('select');
+        sourceOptions(field.source).forEach(entry => input.appendChild(option(entry[0], entry[1])));
+      } else if (field.type === 'json') {
+        input = element('textarea');
+        input.rows = 3;
+        input.placeholder = 'leer lassen = alle Werte 0';
+        const templateButton = element('button', 'small', 'Vorlage einfügen');
+        templateButton.onclick = () => { input.value = zeroTemplate(field.template); };
+        label.appendChild(templateButton);
+      } else {
+        input = element('input');
+        input.type = field.type === 'number' ? 'number' : 'text';
+        if (field.type === 'number') input.value = '0';
+      }
+      inputs[field.name] = { input: input, field: field };
+      wrapper.appendChild(input);
+      panel.appendChild(wrapper);
+    });
+
+    const statusId = 'form-status-' + index;
+    const submit = element('button', 'accent', 'Ausführen');
+    submit.onclick = () => submitForm(form, inputs, submit, statusId);
+    panel.appendChild(submit);
+    panel.appendChild(element('div', 'status', '')).id = statusId;
+
+    container.appendChild(panel);
+  });
+}
+
+async function submitForm(form, inputs, button, statusId) {
+  hideError();
+  const body = credentials();
+
+  for (const name of Object.keys(inputs)) {
+    const entry = inputs[name];
+    const raw = entry.input.value;
+    if (entry.field.type === 'json') {
+      if (raw.trim() === '') continue;
+      try {
+        body[name] = JSON.parse(raw);
+      } catch (error) {
+        setStatus(statusId, entry.field.label + ' ist kein gültiges JSON: ' + error.message, false);
+        return;
+      }
+    } else if (entry.field.type === 'number') {
+      body[name] = Number(raw);
+    } else {
+      if (raw === '') {
+        setStatus(statusId, entry.field.label + ' darf nicht leer sein.', false);
+        return;
+      }
+      body[name] = raw;
+    }
+  }
+
+  button.disabled = true;
+  setStatus(statusId, 'Sende …', true);
+  const result = await callApi(form.endpoint, body);
+  button.disabled = false;
+
+  if (!result.ok) {
+    setStatus(statusId, 'Fehlgeschlagen.', false);
+    showError(result);
+    return;
+  }
+  setStatus(statusId, result.payload === null || result.payload === undefined
+    ? 'Erfolgreich.'
+    : 'Erfolgreich: ' + JSON.stringify(result.payload), true);
+  await loadAll();
+}
+
+/* ---------- Bekanntes verwalten ---------- */
+
+const KNOWN_CONFIG = {
+  Skills: { get: 'getKnownSkills', set: 'editKnownSkills', param: 'known_skills', catalog: () => skillCatalog },
+  SpellEffects: { get: 'getKnownSpellEffects', set: 'editKnownSpellEffects', param: 'known_spell_effects', catalog: () => spellCatalog },
+  StatusEffects: { get: 'getKnownStatusEffects', set: 'editKnownStatusEffects', param: 'known_status_effects', catalog: () => statusCatalog },
+  Characters: { get: 'getKnownCharacters', set: 'editKnownCharacters', param: 'known_characters', catalog: null }
+};
+
+function knownEntries(type) {
+  const config = KNOWN_CONFIG[type];
+  if (!config.catalog) {
+    return allCharacters.map(id => [id, characterName(id)]);
+  }
+  const catalog = config.catalog();
+  return Object.keys(catalog).map(id => [id, catalog[id].name || id]);
+}
+
+async function loadKnown() {
+  hideError();
+  const characterId = document.getElementById('known-character').value;
+  const type = document.getElementById('known-type').value;
+  if (!characterId) return;
+
+  const config = KNOWN_CONFIG[type];
+  const result = await callApi(config.get, credentials({ character_id: characterId }));
+  if (!result.ok) {
+    setStatus('known-status', 'Laden fehlgeschlagen.', false);
+    showError(result);
+    return;
+  }
+
+  const active = result.payload || [];
+  const list = document.getElementById('known-list');
+  list.innerHTML = '';
+  knownEntries(type).forEach(entry => {
+    if (entry[0] === characterId) return;
+    const row = element('label', 'check-row');
+    const box = element('input');
+    box.type = 'checkbox';
+    box.value = entry[0];
+    box.checked = active.includes(entry[0]);
+    row.appendChild(box);
+    row.appendChild(element('span', null, entry[1]));
+    row.appendChild(element('span', 'muted', entry[0]));
+    list.appendChild(row);
+  });
+
+  setStatus('known-status', active.length + ' Einträge aktuell bekannt.', true);
+}
+
+async function saveKnown() {
+  hideError();
+  const characterId = document.getElementById('known-character').value;
+  const type = document.getElementById('known-type').value;
+  if (!characterId) return;
+
+  const config = KNOWN_CONFIG[type];
+  const selected = [...document.querySelectorAll('#known-list input:checked')].map(box => box.value);
+  const body = credentials({ character_id: characterId });
+  body[config.param] = selected;
+
+  const button = document.getElementById('known-save');
+  button.disabled = true;
+  const result = await callApi(config.set, body);
+  button.disabled = false;
+  if (!result.ok) {
+    setStatus('known-status', 'Speichern fehlgeschlagen.', false);
+    showError(result);
+    return;
+  }
+  setStatus('known-status', selected.length + ' Einträge gespeichert.', true);
+}
+
+/* ---------- Laden ---------- */
+
+function catalogOf(result) {
+  return result.ok && result.payload && typeof result.payload === 'object' ? result.payload : {};
+}
+
+function listOf(result) {
+  return result.ok && Array.isArray(result.payload) ? result.payload : [];
+}
+
+async function loadAll() {
+  setStatus('page-status', 'Lade Daten …', true);
+
+  const [own, byUser, items, skills, spells, statuses] = await Promise.all([
+    callApi('listOwnCharacters', credentials()),
+    callApi('listAllCharactersByUser', credentials()),
+    callApi('ListAllItems', credentials()),
+    callApi('listAllSkills', credentials()),
+    callApi('listAllSpellEffects', credentials()),
+    callApi('listAllStatusEffects', credentials())
+  ]);
+
+  if (!byUser.ok) {
+    setStatus('page-status', 'Übersicht konnte nicht geladen werden.', false);
+    showError(byUser);
+    return;
+  }
+
+  ownCharacters = listOf(own);
+  charactersByUser = byUser.payload || {};
+  allCharacters = Object.keys(charactersByUser).reduce(
+    (collected, userId) => collected.concat(charactersByUser[userId]), []);
+  itemCatalog = catalogOf(items);
+  skillCatalog = catalogOf(skills);
+  spellCatalog = catalogOf(spells);
+  statusCatalog = catalogOf(statuses);
+
+  renderOwn();
+  renderAll();
+  renderForms();
+
+  const knownSelect = document.getElementById('known-character');
+  const previous = knownSelect.value;
+  knownSelect.innerHTML = '';
+  allCharacters.forEach(id => knownSelect.appendChild(option(id, characterName(id) + ' (' + id + ')')));
+  if (previous) knownSelect.value = previous;
+
+  setStatus('page-status', 'Stand: ' + new Date().toLocaleTimeString(), true);
+}
+
+/* ---------- Seitensteuerung ---------- */
+
+document.getElementById('logout').onclick = () => {
+  sessionStorage.removeItem('session');
+  window.location.href = '/';
+};
+document.getElementById('console').onclick = () => { window.location.href = '/static/app.html'; };
+document.getElementById('reload').onclick = loadAll;
+document.getElementById('user-filter').onchange = drawAllRows;
+document.getElementById('all-filter').oninput = drawAllRows;
+document.getElementById('known-load').onclick = loadKnown;
+document.getElementById('known-save').onclick = saveKnown;
+document.getElementById('known-type').onchange = loadKnown;
+
+document.querySelectorAll('#sheet-tabs .tab').forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll('#sheet-tabs .tab').forEach(other =>
+      other.classList.toggle('active', other === tab));
+    ['own', 'all', 'create'].forEach(name => {
+      document.getElementById('tab-' + name).style.display = tab.dataset.tab === name ? '' : 'none';
+    });
+  };
+});
+
+if (session) {
+  document.getElementById('who').textContent =
+    session.username + ' (' + session.userId + ', Rolle: ' + session.role + ')';
+  loadAll();
+}
+</script>
+</body>
+</html>

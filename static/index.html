@@ -98,7 +98,7 @@ async function doLogin() {
       password: password,
       role: role
     }));
-    window.location.href = '/static/player.html';
+    window.location.href = role === 'gm' ? '/static/gm.html' : '/static/player.html';
   } catch (error) {
     setMessage('login-message', 'Netzwerkfehler: ' + error, false);
   } finally {

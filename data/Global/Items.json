@@ -16,5 +16,23 @@
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
     }
+  },
+  "Item_1": {
+    "name": "Test",
+    "description": "nee",
+    "owner": "Charakter_Test",
+    "equipped": false,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": 0,
+      "Körperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    }
   }
 }
