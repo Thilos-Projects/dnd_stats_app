@@ -17,6 +17,7 @@
 <nav id="sheet-tabs">
   <button class="tab active" data-tab="sheet">Statsheet</button>
   <button class="tab" data-tab="inventory">Inventar</button>
+  <button class="tab" data-tab="documents">Dokumente</button>
 </nav>
 
 <main id="sheet-page">
@@ -74,6 +75,27 @@
         <button class="accent" id="transfer">Weitergeben</button>
       </div>
       <div class="status" id="transfer-status"></div>
+    </section>
+  </div>
+
+  <div id="tab-documents" style="display: none">
+    <section class="panel">
+      <h2>Dokumente</h2>
+      <div class="status" id="documents-status"></div>
+      <div class="inline-form">
+        <input type="text" id="new-document-name" placeholder="neues_dokument">
+        <select id="new-document-extension">
+          <option value=".txt">.txt</option>
+          <option value=".md">.md</option>
+        </select>
+        <button class="accent" id="create-document">Textdatei erstellen</button>
+      </div>
+      <textarea id="new-document-content" rows="6" placeholder="Optionaler Startinhalt"></textarea>
+      <div class="inline-form">
+        <input type="file" id="upload-document" accept=".txt,.md,.png">
+        <button id="upload-document-button">Datei hochladen</button>
+      </div>
+      <ul class="character-list" id="documents-list"></ul>
     </section>
   </div>
 </main>
@@ -520,8 +542,13 @@ function renderRowSection(config) {
     if (row.ursache) details.push('Ursache: ' + row.ursache);
     if (row.erzeuger_id) details.push('Erzeuger: ' + row.erzeuger_id);
     const description = entry.beschreibung || entry.description || '';
-    const detailCell = element('td', 'muted-cell', details.join(' · ') || description);
-    detailCell.title = description;
+    if (entry.bedingung_zum_einsetzen) details.push('Bedingung: ' + entry.bedingung_zum_einsetzen);
+    if (entry.wuerfe_zum_einsetzen) details.push('Wurf/Würfe: ' + entry.wuerfe_zum_einsetzen);
+    if (description) details.push('Beschreibung: ' + description);
+    if (entry.effekt) details.push('Effekt: ' + entry.effekt);
+    const detailText = details.join(' · ');
+    const detailCell = element('td', 'muted-cell', detailText || description);
+    detailCell.title = detailText || description;
     tableRow.appendChild(detailCell);
 
     const actionCell = element('td', 'actions');
@@ -668,6 +695,198 @@ async function transferItem() {
   await loadAll();
 }
 
+/* ---------- Dokumente ---------- */
+
+function documentTypeLabel(type) {
+  return type === 'image' ? 'Bild' : 'Text';
+}
+
+function fileExt(name) {
+  const index = String(name).lastIndexOf('.');
+  return index >= 0 ? String(name).slice(index).toLowerCase() : '';
+}
+
+function openDocumentInNewTab(documentPayload) {
+  const child = window.open('', '_blank', 'noopener');
+  if (!child) {
+    setStatus('documents-status', 'Popup blockiert: Bitte Popups für diese Seite erlauben.', false);
+    return;
+  }
+  child.document.title = documentPayload.name;
+  if (documentPayload.type === 'image') {
+    child.document.body.style.margin = '0';
+    const img = child.document.createElement('img');
+    img.src = 'data:' + (documentPayload.mime_type || 'image/png') + ';base64,' + documentPayload.content_base64;
+    img.alt = documentPayload.name;
+    img.style.maxWidth = '100%';
+    img.style.height = 'auto';
+    child.document.body.appendChild(img);
+    return;
+  }
+
+  child.document.body.style.margin = '0';
+  child.document.body.style.display = 'flex';
+  child.document.body.style.flexDirection = 'column';
+  child.document.body.style.height = '100vh';
+  const header = child.document.createElement('div');
+  header.style.padding = '0.5rem';
+  const button = child.document.createElement('button');
+  button.textContent = 'Speichern';
+  const state = child.document.createElement('span');
+  state.style.marginLeft = '0.75rem';
+  header.appendChild(button);
+  header.appendChild(state);
+  const editor = child.document.createElement('textarea');
+  editor.value = documentPayload.content || '';
+  editor.style.flex = '1';
+  editor.style.width = '100%';
+  editor.style.boxSizing = 'border-box';
+  child.document.body.appendChild(header);
+  child.document.body.appendChild(editor);
+
+  button.onclick = async () => {
+    button.disabled = true;
+    state.textContent = 'Speichere …';
+    const result = await callApi('updateCharacterTextDocument', credentials({
+      character_id: characterId,
+      file_name: documentPayload.name,
+      content: editor.value
+    }));
+    button.disabled = false;
+    if (!result.ok) {
+      state.textContent = 'Speichern fehlgeschlagen.';
+      return;
+    }
+    state.textContent = 'Gespeichert: ' + new Date().toLocaleTimeString();
+    await loadDocuments();
+  };
+}
+
+async function openDocument(fileName) {
+  hideError();
+  const result = await callApi('openCharacterDocument', credentials({
+    character_id: characterId,
+    file_name: fileName
+  }));
+  if (!result.ok) {
+    showError(result);
+    return;
+  }
+  openDocumentInNewTab(result.payload);
+}
+
+async function deleteDocument(fileName) {
+  hideError();
+  const result = await callApi('deleteCharacterDocument', credentials({
+    character_id: characterId,
+    file_name: fileName
+  }));
+  if (!result.ok) {
+    showError(result);
+    setStatus('documents-status', 'Löschen fehlgeschlagen.', false);
+    return;
+  }
+  setStatus('documents-status', 'Dokument gelöscht: ' + fileName, true);
+  await loadDocuments();
+}
+
+async function createTextDocument() {
+  hideError();
+  const baseName = document.getElementById('new-document-name').value.trim();
+  const extension = document.getElementById('new-document-extension').value;
+  const content = document.getElementById('new-document-content').value;
+  if (!baseName) {
+    setStatus('documents-status', 'Bitte einen Dateinamen eingeben.', false);
+    return;
+  }
+  const fileName = baseName.endsWith(extension) ? baseName : baseName + extension;
+  const result = await callApi('createCharacterTextDocument', credentials({
+    character_id: characterId,
+    file_name: fileName,
+    content: content
+  }));
+  if (!result.ok) {
+    showError(result);
+    setStatus('documents-status', 'Erstellen fehlgeschlagen.', false);
+    return;
+  }
+  document.getElementById('new-document-name').value = '';
+  document.getElementById('new-document-content').value = '';
+  setStatus('documents-status', 'Textdatei erstellt: ' + fileName, true);
+  await loadDocuments();
+}
+
+async function uploadDocument() {
+  hideError();
+  const fileInput = document.getElementById('upload-document');
+  const file = fileInput.files && fileInput.files[0];
+  if (!file) {
+    setStatus('documents-status', 'Bitte eine Datei auswählen.', false);
+    return;
+  }
+  const extension = fileExt(file.name);
+  if (!['.txt', '.md', '.png'].includes(extension)) {
+    setStatus('documents-status', 'Nur .txt, .md und .png sind erlaubt.', false);
+    return;
+  }
+
+  const isImage = extension === '.png';
+  let content;
+  try {
+    content = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(reader.error || new Error('Datei konnte nicht gelesen werden'));
+      reader.onload = () => resolve(reader.result);
+      if (isImage) reader.readAsDataURL(file);
+      else reader.readAsText(file);
+    });
+  } catch (error) {
+    setStatus('documents-status', 'Datei konnte nicht gelesen werden.', false);
+    return;
+  }
+  const payload = credentials({
+    character_id: characterId,
+    file_name: file.name,
+    content: isImage ? String(content).split(',', 2)[1] : String(content),
+    encoding: isImage ? 'base64' : 'text'
+  });
+  const result = await callApi('uploadCharacterDocument', payload);
+  if (!result.ok) {
+    showError(result);
+    setStatus('documents-status', 'Upload fehlgeschlagen.', false);
+    return;
+  }
+  fileInput.value = '';
+  setStatus('documents-status', 'Datei hochgeladen: ' + file.name, true);
+  await loadDocuments();
+}
+
+async function loadDocuments() {
+  const list = document.getElementById('documents-list');
+  list.innerHTML = '';
+  setStatus('documents-status', 'Lade Dokumente …', true);
+  const result = await callApi('listCharacterDocuments', credentials({ character_id: characterId }));
+  if (!result.ok) {
+    showError(result);
+    setStatus('documents-status', 'Dokumente konnten nicht geladen werden.', false);
+    return;
+  }
+  const documents = Array.isArray(result.payload) ? result.payload : [];
+  documents.forEach(entry => {
+    const row = element('li');
+    const openButton = element('button', 'ghost small', entry.name + ' (' + documentTypeLabel(entry.type) + ')');
+    openButton.onclick = () => openDocument(entry.name);
+    const deleteButton = element('button', 'danger small', 'Löschen');
+    deleteButton.onclick = () => deleteDocument(entry.name);
+    row.appendChild(openButton);
+    row.appendChild(deleteButton);
+    list.appendChild(row);
+  });
+  setStatus('documents-status', documents.length
+    ? documents.length + ' Dokument(e).'
+    : 'Keine Dokumente vorhanden.', true);
+}
+
 /* ---------- Laden ---------- */
 
 function catalogOf(result) {
@@ -755,6 +974,7 @@ async function loadAll() {
   });
 
   renderInventory();
+  await loadDocuments();
   setStatus('page-status', 'Stand: ' + new Date().toLocaleTimeString(), true);
 }
 
@@ -769,6 +989,8 @@ document.getElementById('back').onclick = () => {
 };
 document.getElementById('reload').onclick = loadAll;
 document.getElementById('transfer').onclick = transferItem;
+document.getElementById('create-document').onclick = createTextDocument;
+document.getElementById('upload-document-button').onclick = uploadDocument;
 
 document.querySelectorAll('#sheet-tabs .tab').forEach(tab => {
   tab.onclick = () => {
@@ -776,6 +998,7 @@ document.querySelectorAll('#sheet-tabs .tab').forEach(tab => {
       other.classList.toggle('active', other === tab));
     document.getElementById('tab-sheet').style.display = tab.dataset.tab === 'sheet' ? '' : 'none';
     document.getElementById('tab-inventory').style.display = tab.dataset.tab === 'inventory' ? '' : 'none';
+    document.getElementById('tab-documents').style.display = tab.dataset.tab === 'documents' ? '' : 'none';
   };
 });
 
