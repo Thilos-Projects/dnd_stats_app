@@ -764,9 +764,7 @@ function openDocumentInNewTab(documentPayload) {
       return;
     }
     state.textContent = 'Gespeichert: ' + new Date().toLocaleTimeString();
-    if (!child.closed) {
-      try { await loadDocuments(); } catch (error) {}
-    }
+    try { await loadDocuments(); } catch (error) {}
   };
 }
 
