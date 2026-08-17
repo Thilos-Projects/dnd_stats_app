@@ -745,6 +745,7 @@ function openDocumentInline(documentPayload) {
 
   if (documentPayload.type === 'image') {
     saveButton.style.display = 'none';
+    saveButton.onclick = null;
     const img = document.createElement('img');
     img.src = 'data:' + (documentPayload.mime_type || 'image/png') + ';base64,' + documentPayload.content_base64;
     img.alt = documentPayload.name;
