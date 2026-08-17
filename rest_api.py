@@ -17,8 +17,11 @@ Two functions are wrapped instead of auto-exposed, purely for security reasons:
   meant to be called standalone; only the combined `validate_all` entry
   point (as recommended by API.md) is exposed.
 
-Run with: `python rest_api.py` (development server) or via a WSGI server
-pointing at `rest_api:app`.
+Run with:
+  python rest_api.py                 — uses waitress (production) if installed,
+                                       otherwise Flask's built-in dev server.
+  Set DEBUG=1 to enable debug mode (Flask dev server only, never in production).
+  Set HOST / PORT env vars to override the listening address / port.
 """
 
 from __future__ import annotations
@@ -45,6 +48,9 @@ _CUSTOM_HANDLED = {"load_and_compute", "validate_all", "TestUsers", "TestForStat
 _NOT_ENDPOINTS = {"StatSheetEngine", "FormulaError", "CircularReferenceError", "CouldNotReach"}
 
 
+_DEBUG = os.environ.get("DEBUG", "").strip() not in ("", "0", "false", "False")
+
+
 def _error_response(error: Exception) -> tuple[Any, int]:
     if isinstance(error, PermissionError):
         status = 403
@@ -54,16 +60,20 @@ def _error_response(error: Exception) -> tuple[Any, int]:
         status = 400
     else:
         status = 500
-    payload = {
+    payload: dict[str, Any] = {
         "error": str(error),
         "exception": type(error).__name__,
-        "exception_module": type(error).__module__,
-        "args": [repr(argument) for argument in error.args],
-        "traceback": "".join(traceback.format_exception(type(error), error, error.__traceback__)),
     }
-    if error.__cause__ is not None or error.__context__ is not None:
-        cause = error.__cause__ or error.__context__
-        payload["cause"] = f"{type(cause).__name__}: {cause}"
+    if _DEBUG:
+        # Expose full details only when running locally in debug mode.
+        # Never send tracebacks over the internet – they reveal internal paths
+        # and code structure that attackers can exploit.
+        payload["exception_module"] = type(error).__module__
+        payload["args"] = [repr(argument) for argument in error.args]
+        payload["traceback"] = "".join(traceback.format_exception(type(error), error, error.__traceback__))
+        if error.__cause__ is not None or error.__context__ is not None:
+            cause = error.__cause__ or error.__context__
+            payload["cause"] = f"{type(cause).__name__}: {cause}"
     return jsonify(payload), status
 
 
@@ -150,8 +160,19 @@ def index_view() -> Any:
 
 
 if __name__ == "__main__":
-    # host="0.0.0.0" binds all network interfaces so the API is reachable from other devices;
-    # override via HOST/PORT env vars, e.g. when only LAN access (not the whole internet) is wanted.
     host = os.environ.get("HOST", "0.0.0.0")
     port = int(os.environ.get("PORT", "5000"))
-    app.run(host=host, port=port, debug=False)
+
+    try:
+        from waitress import serve  # type: ignore[import-untyped]
+
+        # waitress is a production-grade pure-Python WSGI server: multi-threaded,
+        # no debug reloader, no sensitive error pages – safe for internet use.
+        threads = int(os.environ.get("THREADS", "8"))
+        print(f"Starting waitress on {host}:{port} (threads={threads})")
+        serve(app, host=host, port=port, threads=threads)
+    except ImportError:
+        # Fall back to Flask's built-in server for local development only.
+        # It is single-threaded and not suitable for public internet exposure.
+        print("waitress not installed – falling back to Flask development server (not for production use)")
+        app.run(host=host, port=port, debug=_DEBUG)
