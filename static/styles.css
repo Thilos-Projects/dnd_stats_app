@@ -361,3 +361,64 @@ button.small { padding: 3px 10px; font-size: 12px; }
   margin-bottom: 8px;
 }
 #errorbox pre { background: #2b1b1b; margin: 0; font-size: 12px; }
+
+/* Skill description cell – truncated with hover tooltip */
+.data-table td.skill-desc-cell {
+  color: #666;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+}
+
+/* Inline document modal */
+.doc-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.doc-modal-box {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  width: 90vw;
+  max-width: 860px;
+  max-height: 90vh;
+}
+.doc-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  gap: 12px;
+}
+.doc-modal-title { font-weight: 600; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.doc-modal-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.doc-modal-state { font-size: 13px; color: #666; }
+.doc-modal-body {
+  flex: 1;
+  overflow: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+.doc-modal-editor {
+  flex: 1;
+  width: 100%;
+  min-height: 340px;
+  box-sizing: border-box;
+  font-family: monospace;
+  font-size: 13px;
+  resize: vertical;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  padding: 8px;
+}

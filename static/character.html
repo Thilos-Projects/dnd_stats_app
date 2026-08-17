@@ -100,6 +100,20 @@
   </div>
 </main>
 
+<div id="doc-modal" class="doc-modal" style="display:none">
+  <div class="doc-modal-box">
+    <div class="doc-modal-header">
+      <span id="doc-modal-title" class="doc-modal-title"></span>
+      <div class="doc-modal-actions">
+        <button id="doc-modal-save" class="accent small" style="display:none">Speichern</button>
+        <span id="doc-modal-state" class="doc-modal-state"></span>
+        <button id="doc-modal-close" class="ghost small">✕ Schließen</button>
+      </div>
+    </div>
+    <div id="doc-modal-body" class="doc-modal-body"></div>
+  </div>
+</div>
+
 <script>
 const session = JSON.parse(sessionStorage.getItem('session') || 'null');
 if (!session || session.mode !== 'user') {
@@ -314,7 +328,7 @@ function renderSkills(skills, talents, stats) {
 
     const table = element('table', 'data-table');
     table.innerHTML = '<thead><tr><th>Skill</th><th>Attribute (Würfelwerte)</th>' +
-      '<th>Basis-FW</th><th>Bonus</th><th>FW</th></tr></thead>';
+      '<th>Basis-FW</th><th>Bonus</th><th>FW</th><th>Beschreibung</th></tr></thead>';
     const body = element('tbody');
 
     Object.keys(skills[talentName]).forEach(skillName => {
@@ -326,6 +340,18 @@ function renderSkills(skills, talents, stats) {
       row.appendChild(element('td', null, number(fieldValue(skill.base_fw))));
       row.appendChild(element('td', null, signed(fieldValue(skill.bonus_fw))));
       row.appendChild(element('td', 'strong', number(fieldValue(skill.fw))));
+
+      const catalogEntry = Object.values(skillCatalog).find(e => e.name === skillName) || {};
+      const parts = [];
+      if (catalogEntry.beschreibung) parts.push(catalogEntry.beschreibung);
+      if (catalogEntry.bedingung_zum_einsetzen) parts.push('Bedingung: ' + catalogEntry.bedingung_zum_einsetzen);
+      if (catalogEntry.wuerfe_zum_einsetzen) parts.push('Wurf: ' + catalogEntry.wuerfe_zum_einsetzen);
+      if (catalogEntry.effekt) parts.push('Effekt: ' + catalogEntry.effekt);
+      const fullText = parts.join(' · ');
+      const descCell = element('td', 'skill-desc-cell', fullText || '–');
+      if (fullText) descCell.title = fullText;
+      row.appendChild(descCell);
+
       body.appendChild(row);
     });
 
@@ -705,67 +731,56 @@ function fileExt(name) {
   return index >= 0 ? String(name).slice(index).toLowerCase() : '';
 }
 
-function openDocumentInNewTab(documentPayload) {
-  const child = window.open('', '_blank', 'noopener');
-  if (!child) {
-    setStatus('documents-status', 'Popup blockiert: Bitte Popups für diese Seite erlauben.', false);
-    return;
-  }
-  child.document.title = documentPayload.name;
+function openDocumentInline(documentPayload) {
+  const modal = document.getElementById('doc-modal');
+  const modalTitle = document.getElementById('doc-modal-title');
+  const modalBody = document.getElementById('doc-modal-body');
+  const saveButton = document.getElementById('doc-modal-save');
+  const stateSpan = document.getElementById('doc-modal-state');
+  const closeButton = document.getElementById('doc-modal-close');
+
+  modalTitle.textContent = documentPayload.name;
+  modalBody.innerHTML = '';
+  stateSpan.textContent = '';
+
   if (documentPayload.type === 'image') {
-    child.document.body.style.margin = '0';
-    const img = child.document.createElement('img');
+    saveButton.style.display = 'none';
+    saveButton.onclick = null;
+    const img = document.createElement('img');
     img.src = 'data:' + (documentPayload.mime_type || 'image/png') + ';base64,' + documentPayload.content_base64;
     img.alt = documentPayload.name;
     img.style.maxWidth = '100%';
     img.style.height = 'auto';
-    child.document.body.appendChild(img);
-    return;
-  }
+    modalBody.appendChild(img);
+  } else {
+    saveButton.style.display = '';
+    const editor = document.createElement('textarea');
+    editor.value = documentPayload.content || '';
+    editor.className = 'doc-modal-editor';
+    modalBody.appendChild(editor);
 
-  child.document.body.style.margin = '0';
-  child.document.body.style.display = 'flex';
-  child.document.body.style.flexDirection = 'column';
-  child.document.body.style.height = '100vh';
-  const header = child.document.createElement('div');
-  header.style.padding = '0.5rem';
-  const button = child.document.createElement('button');
-  button.textContent = 'Speichern';
-  const state = child.document.createElement('span');
-  state.style.marginLeft = '0.75rem';
-  header.appendChild(button);
-  header.appendChild(state);
-  const editor = child.document.createElement('textarea');
-  editor.value = documentPayload.content || '';
-  editor.style.flex = '1';
-  editor.style.width = '100%';
-  editor.style.boxSizing = 'border-box';
-  child.document.body.appendChild(header);
-  child.document.body.appendChild(editor);
-
-  button.onclick = async () => {
-    button.disabled = true;
-    state.textContent = 'Speichere …';
-    const response = await fetch('/api/updateCharacterTextDocument', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        user_id: session.userId,
-        username: session.username,
-        password_hash: session.password,
+    saveButton.onclick = async () => {
+      saveButton.disabled = true;
+      stateSpan.textContent = 'Speichere …';
+      const result = await callApi('updateCharacterTextDocument', credentials({
         character_id: characterId,
         file_name: documentPayload.name,
         content: editor.value
-      })
-    });
-    button.disabled = false;
-    if (!response.ok) {
-      state.textContent = 'Speichern fehlgeschlagen.';
-      return;
-    }
-    state.textContent = 'Gespeichert: ' + new Date().toLocaleTimeString();
-    try { await loadDocuments(); } catch (error) {}
-  };
+      }));
+      saveButton.disabled = false;
+      if (!result.ok) {
+        stateSpan.textContent = 'Speichern fehlgeschlagen.';
+        return;
+      }
+      stateSpan.textContent = 'Gespeichert: ' + new Date().toLocaleTimeString();
+      try { await loadDocuments(); } catch (error) {}
+    };
+  }
+
+  modal.style.display = 'flex';
+
+  closeButton.onclick = () => { modal.style.display = 'none'; };
+  modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
 }
 
 async function openDocument(fileName) {
@@ -778,7 +793,7 @@ async function openDocument(fileName) {
     showError(result);
     return;
   }
-  openDocumentInNewTab(result.payload);
+  openDocumentInline(result.payload);
 }
 
 async function deleteDocument(fileName) {
