@@ -21,7 +21,7 @@
     "name": "Test",
     "description": "nee",
     "owner": "Charakter_Test",
-    "equipped": false,
+    "equipped": true,
     "stat_bonus": {
       "Mut": 0,
       "Klugheit": 0,

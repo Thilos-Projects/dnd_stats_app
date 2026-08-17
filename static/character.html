@@ -895,7 +895,7 @@ async function loadDocuments() {
   const documents = Array.isArray(result.payload) ? result.payload : [];
   documents.forEach(entry => {
     const row = element('li');
-    const openButton = element('button', 'ghost small', entry.name + ' (' + documentTypeLabel(entry.type) + ')');
+    const openButton = element('button', 'small', entry.name + ' (' + documentTypeLabel(entry.type) + ')');
     openButton.onclick = () => openDocument(entry.name);
     const deleteButton = element('button', 'danger small', 'Löschen');
     deleteButton.onclick = () => deleteDocument(entry.name);
