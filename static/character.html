@@ -544,11 +544,10 @@ function renderRowSection(config) {
     const description = entry.beschreibung || entry.description || '';
     if (entry.bedingung_zum_einsetzen) details.push('Bedingung: ' + entry.bedingung_zum_einsetzen);
     if (entry.wuerfe_zum_einsetzen) details.push('Wurf/Würfe: ' + entry.wuerfe_zum_einsetzen);
-    if (description) details.push('Beschreibung: ' + description);
     if (entry.effekt) details.push('Effekt: ' + entry.effekt);
     const detailText = details.join(' · ');
     const detailCell = element('td', 'muted-cell', detailText || description);
-    detailCell.title = detailText || description;
+    detailCell.title = [description, detailText].filter(Boolean).join(' · ');
     tableRow.appendChild(detailCell);
 
     const actionCell = element('td', 'actions');
@@ -747,18 +746,27 @@ function openDocumentInNewTab(documentPayload) {
   button.onclick = async () => {
     button.disabled = true;
     state.textContent = 'Speichere …';
-    const result = await callApi('updateCharacterTextDocument', credentials({
-      character_id: characterId,
-      file_name: documentPayload.name,
-      content: editor.value
-    }));
+    const response = await fetch('/api/updateCharacterTextDocument', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: session.userId,
+        username: session.username,
+        password_hash: session.password,
+        character_id: characterId,
+        file_name: documentPayload.name,
+        content: editor.value
+      })
+    });
     button.disabled = false;
-    if (!result.ok) {
+    if (!response.ok) {
       state.textContent = 'Speichern fehlgeschlagen.';
       return;
     }
     state.textContent = 'Gespeichert: ' + new Date().toLocaleTimeString();
-    await loadDocuments();
+    if (!window.closed) {
+      try { await loadDocuments(); } catch (error) {}
+    }
   };
 }
 
