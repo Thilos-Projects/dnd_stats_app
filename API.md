@@ -131,6 +131,36 @@ Ersetzt `known_StatusEffects`. IDs müssen mit `"StatusEffekt_"` beginnen und in
 
 ---
 
+## Documents.py — Charakterdokumente
+
+Verwaltet Dateien unter `data/User/<benutzerordner>/<charakterordner>/documents`.
+Zugriff erhalten nur Charaktereigentümer sowie GM/Admin.
+Erlaubte Dateitypen: `.txt`, `.md`, `.png`.
+
+### `listCharacterDocuments(user_id, username, password_hash, character_id) -> list[dict[str, str | int]]`
+Listet alle erlaubten Dokumente eines Charakters auf (Name, Typ, Dateigröße in Bytes).
+
+### `openCharacterDocument(user_id, username, password_hash, character_id, file_name) -> dict[str, str]`
+Öffnet ein Dokument:
+- Textdateien liefern `{name, type: "text", content}`.
+- Bilder liefern `{name, type: "image", mime_type, content_base64}`.
+
+### `createCharacterTextDocument(user_id, username, password_hash, character_id, file_name, content="") -> str`
+Erstellt eine **neue** Textdatei (`.txt` oder `.md`). Schlägt fehl, wenn die Datei schon existiert.
+
+### `updateCharacterTextDocument(user_id, username, password_hash, character_id, file_name, content) -> str`
+Überschreibt den Inhalt einer vorhandenen Textdatei (`.txt` oder `.md`).
+
+### `uploadCharacterDocument(user_id, username, password_hash, character_id, file_name, content, encoding="text") -> str`
+Lädt ein Dokument hoch oder überschreibt es:
+- Für Textdateien (`.txt`, `.md`) mit `encoding="text"` (direkter Text) oder `encoding="base64"`.
+- Für Bilder (`.png`) nur mit `encoding="base64"`.
+
+### `deleteCharacterDocument(user_id, username, password_hash, character_id, file_name) -> None`
+Löscht ein vorhandenes Dokument.
+
+---
+
 ## Items.py — Gegenstandsverwaltung
 
 Verwaltet globale Items in `data/Global/Items.json` und ihre Zuweisung zu Charakter-Inventaren
@@ -202,11 +232,14 @@ Listet alle Items, die der Nutzer sehen darf.
 Verwaltet globale Skills in `data/Global/Skills.json` und ihre Zuweisung zu `known_Skills` der
 Charaktere.
 
-### `createSkill(user_id, username, password_hash, name, beschreibung, stat_bonus=None, talent_bonus=None, skill_bonus=None, alters_anstieg=0) -> str`
+### `createSkill(user_id, username, password_hash, name, beschreibung, bedingung_zum_einsetzen="", wuerfe_zum_einsetzen="", effekt="", stat_bonus=None, talent_bonus=None, skill_bonus=None, alters_anstieg=0) -> str`
 Erstellt einen neuen Skill.
 - **Parameter:**
   - `name` — nicht-leerer String.
   - `beschreibung` — String (darf leer sein).
+  - `bedingung_zum_einsetzen` — String, beschreibt unter welchen Umständen der Skill benutzt werden kann.
+  - `wuerfe_zum_einsetzen` — String, beschreibt notwendige Würfe (z. B. `1d20`, `2d6+3`).
+  - `effekt` — String, beschreibt den Effekt bei erfolgreichem Einsatz.
   - `stat_bonus` — optionales Dict mit den Feldern `Mut, Klugheit, Intuition, Charisma,
     Fingerfertigkeit, Gewandheit, Konstitution, Körperkraft`, jeweils ganzzahlig zwischen -10 und 10.
     Fehlt es, werden alle Werte auf 0 gesetzt.

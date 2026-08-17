@@ -25,15 +25,44 @@ def _bonus(values: dict[str, int] | None, fields: tuple[str, ...], name: str) ->
     return dict(values)
 
 
-def createSkill(user_id: str, username: str, password_hash: str, name: str, beschreibung: str, stat_bonus: dict[str, int] | None = None, talent_bonus: dict[str, int] | None = None, skill_bonus: dict[str, int] | None = None, alters_anstieg: int = 0) -> str:
+def createSkill(
+    user_id: str,
+    username: str,
+    password_hash: str,
+    name: str,
+    beschreibung: str,
+    bedingung_zum_einsetzen: str = "",
+    wuerfe_zum_einsetzen: str = "",
+    effekt: str = "",
+    stat_bonus: dict[str, int] | None = None,
+    talent_bonus: dict[str, int] | None = None,
+    skill_bonus: dict[str, int] | None = None,
+    alters_anstieg: int = 0,
+) -> str:
     _global_resources.require_manager(user_id, username, password_hash, RESOURCE_NAME)
     if not isinstance(name, str) or not name.strip() or not isinstance(beschreibung, str):
         raise ValueError("name must be non-empty and beschreibung must be a string")
+    if not isinstance(bedingung_zum_einsetzen, str):
+        raise ValueError("bedingung_zum_einsetzen must be a string")
+    if not isinstance(wuerfe_zum_einsetzen, str):
+        raise ValueError("wuerfe_zum_einsetzen must be a string")
+    if not isinstance(effekt, str):
+        raise ValueError("effekt must be a string")
     if isinstance(alters_anstieg, bool) or not isinstance(alters_anstieg, int):
         raise ValueError("alters_anstieg must be an integer")
     skills = _global_resources.load_json(SKILLS_PATH)
     skill_id = _global_resources.next_id(skills, RESOURCE_PREFIX)
-    skills[skill_id] = {"name": name, "beschreibung": beschreibung, "stat_bonus": _bonus(stat_bonus, STAT_FIELDS, "stat_bonus"), "talent_bonus": _bonus(talent_bonus, TALENT_FIELDS, "talent_bonus"), "skill_bonus": _bonus(skill_bonus, SKILL_FIELDS, "skill_bonus"), "alters_anstieg": alters_anstieg}
+    skills[skill_id] = {
+        "name": name,
+        "beschreibung": beschreibung,
+        "bedingung_zum_einsetzen": bedingung_zum_einsetzen,
+        "wuerfe_zum_einsetzen": wuerfe_zum_einsetzen,
+        "effekt": effekt,
+        "stat_bonus": _bonus(stat_bonus, STAT_FIELDS, "stat_bonus"),
+        "talent_bonus": _bonus(talent_bonus, TALENT_FIELDS, "talent_bonus"),
+        "skill_bonus": _bonus(skill_bonus, SKILL_FIELDS, "skill_bonus"),
+        "alters_anstieg": alters_anstieg,
+    }
     _global_resources.save_json(SKILLS_PATH, skills)
     return skill_id
 

@@ -44,6 +44,16 @@ from Characters import (
     editKnownStatusEffects,
 )
 
+# Documents.py -- Charakterdokumente
+from Documents import (
+    listCharacterDocuments,
+    openCharacterDocument,
+    createCharacterTextDocument,
+    updateCharacterTextDocument,
+    uploadCharacterDocument,
+    deleteCharacterDocument,
+)
+
 # Items.py -- Gegenstandsverwaltung
 from Items import (
     createItem,
@@ -125,6 +135,13 @@ __all__ = [
     "editKnownSkills",
     "editKnownSpellEffects",
     "editKnownStatusEffects",
+    # Documents
+    "listCharacterDocuments",
+    "openCharacterDocument",
+    "createCharacterTextDocument",
+    "updateCharacterTextDocument",
+    "uploadCharacterDocument",
+    "deleteCharacterDocument",
     # Items
     "createItem",
     "deleteItem",
