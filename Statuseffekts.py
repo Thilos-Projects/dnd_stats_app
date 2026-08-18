@@ -13,12 +13,12 @@ KNOWN_FIELD = "known_StatusEffects"
 EFFECT_STAT_FIELDS = Skills.STAT_FIELDS + ("MagieSpeicher", "MagieRegeneration")
 
 
-def createStatusEffect(user_id: str, username: str, password_hash: str, name: str, beschreibung: str, default_duration: int = 0, default_time_to_death: int = 0, stat_bonus: dict[str, int] | None = None, talent_bonus: dict[str, int] | None = None) -> str:
+def createStatusEffect(user_id: str, username: str, password_hash: str, name: str, beschreibung: str, default_duration: int | float = 0, default_time_to_death: int | float = 0, stat_bonus: dict[str, int | float] | None = None, talent_bonus: dict[str, int | float] | None = None) -> str:
     _global_resources.require_manager(user_id, username, password_hash, RESOURCE_NAME)
     if not isinstance(name, str) or not name.strip() or not isinstance(beschreibung, str):
         raise ValueError("name must be non-empty and beschreibung must be a string")
-    if any(isinstance(value, bool) or not isinstance(value, int) or value < 0 for value in (default_duration, default_time_to_death)):
-        raise ValueError("default duration and default time to death must be non-negative integers")
+    if any(isinstance(value, bool) or not isinstance(value, int | float) or value < 0 for value in (default_duration, default_time_to_death)):
+        raise ValueError("default duration and default time to death must be non-negative hours")
     effects = _global_resources.load_json(STATUS_EFFECTS_PATH)
     effect_id = _global_resources.next_id(effects, RESOURCE_PREFIX)
     effects[effect_id] = {

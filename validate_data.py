@@ -224,6 +224,10 @@ def TestForGlobalDocuments(executable_path: Path) -> tuple[dict, dict, dict, dic
         for field in talent_Fields:
             if field not in statusEffekt.get("talent_bonus", {}):
                 raise ValueError(f"StatusEffekt {statusEffekt_id} does not have the required talent field '{field}'")
+        for time_field in ["default duration", "default time to death"]:
+            value = statusEffekt[time_field]
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or value < 0:
+                raise ValueError(f"StatusEffekt {statusEffekt_id} has an invalid {time_field}: {value}")
         for stat_name, value in statusEffekt.get("stat_bonus", {}).items():
             if value < -10 or value > 10:
                 raise ValueError(f"StatusEffekt {statusEffekt_id} has an invalid stat bonus '{stat_name}': {value}")

@@ -850,6 +850,206 @@
     }
   },
   "StatusEffekt_35": {
+    "name": "Klingenl\u00e4hmer - rasend",
+    "beschreibung": "Konzentriertes Klingen- oder Insektengift verursacht rasche L\u00e4hmung und Atemnot. Dauer: 12 Stunden. Ohne Behandlung kann der Zustand nach 6 Stunden t\u00f6dlich werden.",
+    "default duration": 12,
+    "default time to death": 6,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": -2,
+      "Gewandheit": -2,
+      "Konstitution": -2,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -2,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_36": {
+    "name": "Zerquetschter Brustkorb",
+    "beschreibung": "Schwerer Treffer durch Keule, Einsturz oder Fall; Atmung ist nur noch m\u00fchsam m\u00f6glich. Dauer: 24 Stunden. Ohne Behandlung kann der Zustand nach 8 Stunden t\u00f6dlich werden.",
+    "default duration": 24,
+    "default time to death": 8,
+    "stat_bonus": {
+      "Mut": -1,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -2,
+      "K\u00f6rperkraft": -2,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -2,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_37": {
+    "name": "Lungenblutung",
+    "beschreibung": "Kritische Stich-, Pfeil- oder Brandverletzung der Lunge; jeder Atemzug kostet Kraft. Dauer: 18 Stunden. Ohne Behandlung kann der Zustand nach 4 Stunden t\u00f6dlich werden.",
+    "default duration": 18,
+    "default time to death": 4,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": -1,
+      "Konstitution": -2,
+      "K\u00f6rperkraft": -1.5,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -1.5,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_38": {
+    "name": "Kritische Halsverletzung",
+    "beschreibung": "Durchtrennte Kehle oder vergleichbare schwere Halsverletzung; sofortige Versorgung entscheidet \u00fcber das \u00dcberleben. Dauer: 6 Minuten. Ohne Behandlung kann der Zustand nach 4 Minuten t\u00f6dlich werden.",
+    "default duration": 0.1,
+    "default time to death": 0.07,
+    "stat_bonus": {
+      "Mut": -1,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -2,
+      "K\u00f6rperkraft": -2,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -2,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_39": {
+    "name": "Offene Halsschlagader",
+    "beschreibung": "Schwere Verletzung einer Halsarterie mit raschem Blutverlust; nur unverz\u00fcgliche Versorgung kann helfen. Dauer: 6 Minuten. Ohne Behandlung kann der Zustand nach 3 Minuten t\u00f6dlich werden.",
+    "default duration": 0.1,
+    "default time to death": 0.05,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": -1,
+      "Konstitution": -2,
+      "K\u00f6rperkraft": -2,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -2,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_40": {
+    "name": "Herzstich",
+    "beschreibung": "Kritische Stichverletzung im Brustraum; der Zustand ist unmittelbar lebensbedrohlich. Dauer: 6 Minuten. Ohne Behandlung kann der Zustand nach 2 Minuten t\u00f6dlich werden.",
+    "default duration": 0.1,
+    "default time to death": 0.03,
+    "stat_bonus": {
+      "Mut": -1.5,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -2,
+      "K\u00f6rperkraft": -2,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -2,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_41": {
+    "name": "Kritische Hirnverletzung",
+    "beschreibung": "Schwere Kopfverletzung durch Sturz, Bolzen oder Keulentreffer; Bewusstsein und Atmung versagen rasch. Dauer: 6 Minuten. Ohne Behandlung kann der Zustand nach 3 Minuten t\u00f6dlich werden.",
+    "default duration": 0.1,
+    "default time to death": 0.05,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": -2,
+      "Intuition": -2,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -2,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -2,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": -2,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_42": {
+    "name": "Zertr\u00fcmmerte Halswirbels\u00e4ule",
+    "beschreibung": "Kritische Verletzung von Nacken und Wirbels\u00e4ule; ohne sofortige Stabilisierung droht rasches Atemversagen. Dauer: 6 Minuten. Ohne Behandlung kann der Zustand nach 4 Minuten t\u00f6dlich werden.",
+    "default duration": 0.1,
+    "default time to death": 0.07,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": -2,
+      "Konstitution": -2,
+      "K\u00f6rperkraft": -2,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -2,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_43": {
     "name": "Kraeuterst\u00e4rkung",
     "beschreibung": "Langanhaltender Kr\u00e4utersud st\u00e4rkt Kreislauf und Widerstandskraft. Dauer: 168 Stunden.",
     "default duration": 168,
@@ -874,7 +1074,7 @@
       "Handwerkstalent": 0
     }
   },
-  "StatusEffekt_36": {
+  "StatusEffekt_44": {
     "name": "Wachsalbe",
     "beschreibung": "Langanhaltende Salbe gegen Steifheit und kalte Gelenke. Dauer: 120 Stunden.",
     "default duration": 120,
@@ -899,7 +1099,7 @@
       "Handwerkstalent": 0
     }
   },
-  "StatusEffekt_37": {
+  "StatusEffekt_45": {
     "name": "Bergarbeitertee",
     "beschreibung": "Bitterer Tee h\u00e4lt wach und stabilisiert die Nerven bei langer Arbeit im Dunkeln. Dauer: 96 Stunden.",
     "default duration": 96,
@@ -924,9 +1124,9 @@
       "Handwerkstalent": 0
     }
   },
-  "StatusEffekt_38": {
-    "name": "Schutzsegen",
-    "beschreibung": "Langanhaltender ritueller Segen f\u00fcr Zuversicht und Standhaftigkeit. Dauer: 240 Stunden.",
+  "StatusEffekt_46": {
+    "name": "Ausgeruhter K\u00f6rper",
+    "beschreibung": "Mehrere N\u00e4chte guter Schlaf, warme Mahlzeiten und trockene Kleidung st\u00e4rken K\u00f6rper und Zuversicht. Dauer: 240 Stunden.",
     "default duration": 240,
     "default time to death": 0,
     "stat_bonus": {
@@ -942,14 +1142,14 @@
       "MagieRegeneration": 0
     },
     "talent_bonus": {
-      "K\u00f6rpertalent": 0,
-      "Geseltschaftstalent": 0.5,
+      "K\u00f6rpertalent": 0.5,
+      "Geseltschaftstalent": 0,
       "Naturtalent": 0,
       "Wissenstalent": 0,
       "Handwerkstalent": 0
     }
   },
-  "StatusEffekt_39": {
+  "StatusEffekt_47": {
     "name": "J\u00e4gertrank",
     "beschreibung": "Langanhaltender Kr\u00e4utertrank sch\u00e4rft Sinne und ruhige Bewegung. Dauer: 144 Stunden.",
     "default duration": 144,
@@ -974,7 +1174,7 @@
       "Handwerkstalent": 0
     }
   },
-  "StatusEffekt_40": {
+  "StatusEffekt_48": {
     "name": "Kampfrausch",
     "beschreibung": "Anhaltende Mischung aus Trommeln, Schmerz und Kr\u00e4utern; macht stark, aber unvorsichtig. Dauer: 72 Stunden.",
     "default duration": 72,
@@ -999,7 +1199,7 @@
       "Handwerkstalent": 0
     }
   },
-  "StatusEffekt_41": {
+  "StatusEffekt_49": {
     "name": "Schattenmantel",
     "beschreibung": "Langanhaltende dunkle Tinktur; d\u00e4mpft Selbstvertrauen, hilft aber beim ungesehenen Verhalten. Dauer: 120 Stunden.",
     "default duration": 120,
@@ -1024,9 +1224,9 @@
       "Handwerkstalent": 0
     }
   },
-  "StatusEffekt_42": {
-    "name": "Arkane Ruhe",
-    "beschreibung": "Langanhaltende Meditation oder Tinktur stabilisiert den Magiespeicher, macht jedoch k\u00f6rperlich tr\u00e4ge. Dauer: 144 Stunden.",
+  "StatusEffekt_50": {
+    "name": "Mineraltrank",
+    "beschreibung": "Kr\u00e4uter- und Mineralsud gegen Ersch\u00f6pfung; st\u00e4rkt den Kreislauf, macht aber etwas tr\u00e4ge. Dauer: 144 Stunden.",
     "default duration": 144,
     "default time to death": 0,
     "stat_bonus": {
@@ -1036,10 +1236,10 @@
       "Charisma": 0,
       "Fingerfertigkeit": 0,
       "Gewandheit": -0.5,
-      "Konstitution": 0,
-      "K\u00f6rperkraft": 0,
-      "MagieSpeicher": 1,
-      "MagieRegeneration": 0.5
+      "Konstitution": 0.5,
+      "K\u00f6rperkraft": 0.5,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
     },
     "talent_bonus": {
       "K\u00f6rpertalent": 0,

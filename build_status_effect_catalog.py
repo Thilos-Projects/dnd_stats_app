@@ -18,13 +18,19 @@ def empty_bonuses() -> tuple[dict[str, int | float], dict[str, int | float]]:
     )
 
 
-def effect(name: str, description: str, duration: int, death_time: int = 0, *, stats: dict[str, int | float] | None = None, talents: dict[str, int | float] | None = None) -> dict:
+def format_hours(hours: int | float) -> str:
+    if 0 < hours < 1:
+        return f"{round(hours * 60)} Minuten"
+    return f"{hours:g} Stunden"
+
+
+def effect(name: str, description: str, duration: int | float, death_time: int | float = 0, *, stats: dict[str, int | float] | None = None, talents: dict[str, int | float] | None = None) -> dict:
     stat_bonus, talent_bonus = empty_bonuses()
     stat_bonus.update(stats or {})
     talent_bonus.update(talents or {})
     return {
         "name": name,
-        "beschreibung": f"{description} Dauer: {duration} Stunden." + (f" Ohne Behandlung kann der Zustand nach {death_time} Stunden tödlich werden." if death_time else ""),
+        "beschreibung": f"{description} Dauer: {format_hours(duration)}." + (f" Ohne Behandlung kann der Zustand nach {format_hours(death_time)} tödlich werden." if death_time else ""),
         "default duration": duration,
         "default time to death": death_time,
         "stat_bonus": stat_bonus,
@@ -68,14 +74,22 @@ def build() -> dict[str, dict]:
         effect("Nervengift - lähmend", "Starkes Gift schwächt Muskeln und Koordination.", 48, 72, stats={"Fingerfertigkeit": -2, "Gewandheit": -1.5, "Körperkraft": -1}, talents={"Körpertalent": -1}),
         effect("Blutgift - schwach", "Gift im Blut verursacht Schwindel und Kraftverlust.", 48, stats={"Konstitution": -1, "Körperkraft": -0.5}),
         effect("Blutgift - tödlich", "Starkes Blutgift; ohne Gegenmittel oder Heilkunde droht Organversagen.", 96, 24, stats={"Konstitution": -2, "Körperkraft": -1.5, "Klugheit": -0.5}, talents={"Körpertalent": -1}),
+        effect("Klingenlähmer - rasend", "Konzentriertes Klingen- oder Insektengift verursacht rasche Lähmung und Atemnot.", 12, 6, stats={"Konstitution": -2, "Fingerfertigkeit": -2, "Gewandheit": -2}, talents={"Körpertalent": -2}),
+        effect("Zerquetschter Brustkorb", "Schwerer Treffer durch Keule, Einsturz oder Fall; Atmung ist nur noch mühsam möglich.", 24, 8, stats={"Konstitution": -2, "Körperkraft": -2, "Mut": -1}, talents={"Körpertalent": -2}),
+        effect("Lungenblutung", "Kritische Stich-, Pfeil- oder Brandverletzung der Lunge; jeder Atemzug kostet Kraft.", 18, 4, stats={"Konstitution": -2, "Körperkraft": -1.5, "Gewandheit": -1}, talents={"Körpertalent": -1.5}),
+        effect("Kritische Halsverletzung", "Durchtrennte Kehle oder vergleichbare schwere Halsverletzung; sofortige Versorgung entscheidet über das Überleben.", 0.1, 0.07, stats={"Konstitution": -2, "Körperkraft": -2, "Mut": -1}, talents={"Körpertalent": -2}),
+        effect("Offene Halsschlagader", "Schwere Verletzung einer Halsarterie mit raschem Blutverlust; nur unverzügliche Versorgung kann helfen.", 0.1, 0.05, stats={"Konstitution": -2, "Körperkraft": -2, "Gewandheit": -1}, talents={"Körpertalent": -2}),
+        effect("Herzstich", "Kritische Stichverletzung im Brustraum; der Zustand ist unmittelbar lebensbedrohlich.", 0.1, 0.03, stats={"Konstitution": -2, "Körperkraft": -2, "Mut": -1.5}, talents={"Körpertalent": -2}),
+        effect("Kritische Hirnverletzung", "Schwere Kopfverletzung durch Sturz, Bolzen oder Keulentreffer; Bewusstsein und Atmung versagen rasch.", 0.1, 0.05, stats={"Klugheit": -2, "Intuition": -2, "Konstitution": -2}, talents={"Wissenstalent": -2, "Körpertalent": -2}),
+        effect("Zertrümmerte Halswirbelsäule", "Kritische Verletzung von Nacken und Wirbelsäule; ohne sofortige Stabilisierung droht rasches Atemversagen.", 0.1, 0.07, stats={"Körperkraft": -2, "Gewandheit": -2, "Konstitution": -2}, talents={"Körpertalent": -2}),
         effect("Kraeuterstärkung", "Langanhaltender Kräutersud stärkt Kreislauf und Widerstandskraft.", 168, stats={"Konstitution": 0.5, "Körperkraft": 0.5}, talents={"Körpertalent": 0.5}),
         effect("Wachsalbe", "Langanhaltende Salbe gegen Steifheit und kalte Gelenke.", 120, stats={"Gewandheit": 0.5, "Fingerfertigkeit": 0.5}),
         effect("Bergarbeitertee", "Bitterer Tee hält wach und stabilisiert die Nerven bei langer Arbeit im Dunkeln.", 96, stats={"Klugheit": 0.5, "Intuition": 0.5}, talents={"Wissenstalent": 0.5}),
-        effect("Schutzsegen", "Langanhaltender ritueller Segen für Zuversicht und Standhaftigkeit.", 240, stats={"Mut": 1, "Konstitution": 0.5}, talents={"Geseltschaftstalent": 0.5}),
+        effect("Ausgeruhter Körper", "Mehrere Nächte guter Schlaf, warme Mahlzeiten und trockene Kleidung stärken Körper und Zuversicht.", 240, stats={"Mut": 1, "Konstitution": 0.5}, talents={"Körpertalent": 0.5}),
         effect("Jägertrank", "Langanhaltender Kräutertrank schärft Sinne und ruhige Bewegung.", 144, stats={"Intuition": 1, "Gewandheit": 0.5}, talents={"Naturtalent": 0.5}),
         effect("Kampfrausch", "Anhaltende Mischung aus Trommeln, Schmerz und Kräutern; macht stark, aber unvorsichtig.", 72, stats={"Mut": 1.5, "Körperkraft": 1, "Klugheit": -0.5, "Intuition": -0.5}, talents={"Körpertalent": 1}),
         effect("Schattenmantel", "Langanhaltende dunkle Tinktur; dämpft Selbstvertrauen, hilft aber beim ungesehenen Verhalten.", 120, stats={"Charisma": -0.5, "Intuition": 0.5}, talents={"Naturtalent": 0.5}),
-        effect("Arkane Ruhe", "Langanhaltende Meditation oder Tinktur stabilisiert den Magiespeicher, macht jedoch körperlich träge.", 144, stats={"MagieSpeicher": 1, "MagieRegeneration": 0.5, "Gewandheit": -0.5}),
+        effect("Mineraltrank", "Kräuter- und Mineralsud gegen Erschöpfung; stärkt den Kreislauf, macht aber etwas träge.", 144, stats={"Konstitution": 0.5, "Körperkraft": 0.5, "Gewandheit": -0.5}),
     ]
     return {f"StatusEffekt_{index}": entry for index, entry in enumerate(catalogue, start=1)}
 
