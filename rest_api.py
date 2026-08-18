@@ -154,7 +154,7 @@ def endpoints_view() -> Any:
     return jsonify(_ENDPOINT_META)
 
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET"], strict_slashes=False)
 def index_view() -> Any:
     return send_from_directory(app.static_folder, "index.html")
 
