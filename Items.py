@@ -13,6 +13,7 @@ import _global_resources
 
 DATA_PATH = Path(__file__).parent / "data"
 ITEMS_PATH = DATA_PATH / "Global" / "Items.json"
+ITEM_TEMPLATES_PATH = DATA_PATH / "Global" / "ItemTemplates.json"
 STAT_BONUS_FIELDS = (
     "Mut",
     "Klugheit",
@@ -58,6 +59,20 @@ def _next_item_id(items: dict[str, Any]) -> str:
         if item_id.startswith("Item_") and item_id.removeprefix("Item_").isdigit()
     ]
     return f"Item_{max(used_numbers, default=0) + 1}"
+
+def _next_item_template_id(templates: dict[str, Any]) -> str:
+    used_numbers = [
+        int(template_id.removeprefix("ItemTemplate_"))
+        for template_id in templates
+        if template_id.startswith("ItemTemplate_")
+        and template_id.removeprefix("ItemTemplate_").isdigit()
+    ]
+    return f"ItemTemplate_{max(used_numbers, default=0) + 1}"
+
+def _load_item_templates() -> dict[str, Any]:
+    if not ITEM_TEMPLATES_PATH.exists():
+        return {}
+    return _load_json(ITEM_TEMPLATES_PATH)
 
 def _normalise_stat_bonus(stat_bonus: dict[str, int] | None) -> dict[str, int]:
     bonuses = {field: 0 for field in STAT_BONUS_FIELDS}
@@ -106,6 +121,74 @@ def createItem(
     }
     _save_json(ITEMS_PATH, items)
     return item_id
+
+def createItemTemplate(
+    user_id: str,
+    username: str,
+    password_hash: str,
+    name: str,
+    description: str,
+    stat_bonus: dict[str, int] | None = None,
+) -> str:
+    """Create a reusable item template and return its generated template ID."""
+    _require_manager(user_id, username, password_hash)
+    if not isinstance(name, str) or not name.strip():
+        raise ValueError("Item template name must be a non-empty string")
+    if not isinstance(description, str):
+        raise ValueError("Item template description must be a string")
+
+    templates = _load_item_templates()
+    template_id = _next_item_template_id(templates)
+    templates[template_id] = {
+        "name": name,
+        "description": description,
+        "stat_bonus": _normalise_stat_bonus(stat_bonus),
+    }
+    _save_json(ITEM_TEMPLATES_PATH, templates)
+    return template_id
+
+def deleteItemTemplate(
+    user_id: str, username: str, password_hash: str, template_id: str
+) -> None:
+    """Delete an item template. Items created from it are not affected."""
+    _require_manager(user_id, username, password_hash)
+    templates = _load_item_templates()
+    if template_id not in templates:
+        raise ValueError(f"Item template {template_id} does not exist")
+    del templates[template_id]
+    _save_json(ITEM_TEMPLATES_PATH, templates)
+
+def listItemTemplates(
+    user_id: str, username: str, password_hash: str
+) -> dict[str, dict[str, Any]]:
+    """Return all item templates. Only GM users may see them."""
+    _require_manager(user_id, username, password_hash)
+    return _load_item_templates()
+
+def createItemFromTemplate(
+    user_id: str,
+    username: str,
+    password_hash: str,
+    template_id: str,
+    name: str | None = None,
+    description: str | None = None,
+    stat_bonus: dict[str, int] | None = None,
+) -> str:
+    """Create an item from a template; given fields override the template values."""
+    _require_manager(user_id, username, password_hash)
+    templates = _load_item_templates()
+    if template_id not in templates:
+        raise ValueError(f"Item template {template_id} does not exist")
+    template = templates[template_id]
+
+    return createItem(
+        user_id,
+        username,
+        password_hash,
+        template["name"] if name is None else name,
+        template["description"] if description is None else description,
+        template["stat_bonus"] if stat_bonus is None else stat_bonus,
+    )
 
 def deleteItem(user_id: str, username: str, password_hash: str, item_id: str) -> None:
     """Delete an unassigned item. Assigned items must be removed first."""

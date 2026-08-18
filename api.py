@@ -58,6 +58,10 @@ from Documents import (
 from Items import (
     createItem,
     deleteItem,
+    createItemTemplate,
+    deleteItemTemplate,
+    listItemTemplates,
+    createItemFromTemplate,
     assignItemToCharacter,
     equipItem,
     unequipItem,
@@ -145,6 +149,10 @@ __all__ = [
     # Items
     "createItem",
     "deleteItem",
+    "createItemTemplate",
+    "deleteItemTemplate",
+    "listItemTemplates",
+    "createItemFromTemplate",
     "assignItemToCharacter",
     "equipItem",
     "unequipItem",

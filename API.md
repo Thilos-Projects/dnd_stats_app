@@ -165,6 +165,7 @@ Löscht ein vorhandenes Dokument.
 
 Verwaltet globale Items in `data/Global/Items.json` und ihre Zuweisung zu Charakter-Inventaren
 (`Inventory.json`) sowie Ausrüstung im `StatSheet.json` (`equipped_items.rows`).
+Zusätzlich werden wiederverwendbare Item-Vorlagen in `data/Global/ItemTemplates.json` verwaltet.
 
 ### `createItem(user_id, username, password_hash, name, description, stat_bonus=None) -> str`
 Erstellt ein neues, noch niemandem zugewiesenes Item.
@@ -182,6 +183,31 @@ Erstellt ein neues, noch niemandem zugewiesenes Item.
 Löscht ein Item dauerhaft. Nur möglich, wenn das Item **keinem** Charakter zugewiesen ist.
 - **Rechte:** nur GM/Admin.
 - **Fehler:** `PermissionError`; `ValueError`, wenn Item nicht existiert oder noch zugewiesen ist.
+
+### `createItemTemplate(user_id, username, password_hash, name, description, stat_bonus=None) -> str`
+Erstellt eine wiederverwendbare Item-Vorlage in `data/Global/ItemTemplates.json`.
+- **Parameter:** wie `createItem` (`name`, `description`, `stat_bonus`).
+- **Rechte:** nur GM/Admin.
+- **Rückgabe:** neue Vorlagen-ID, Format `"ItemTemplate_<n>"`.
+- **Fehler:** `PermissionError`; `ValueError` bei ungültigem Namen/Beschreibung/`stat_bonus`.
+
+### `deleteItemTemplate(user_id, username, password_hash, template_id) -> None`
+Löscht eine Item-Vorlage. Bereits daraus erzeugte Items bleiben unverändert bestehen.
+- **Rechte:** nur GM/Admin.
+- **Fehler:** `PermissionError`; `ValueError`, wenn die Vorlage nicht existiert.
+
+### `listItemTemplates(user_id, username, password_hash) -> dict[str, dict[str, Any]]`
+Listet alle Item-Vorlagen.
+- **Rechte:** nur GM/Admin.
+- **Fehler:** `PermissionError`.
+
+### `createItemFromTemplate(user_id, username, password_hash, template_id, name=None, description=None, stat_bonus=None) -> str`
+Erstellt ein neues, noch niemandem zugewiesenes Item auf Basis einer Vorlage.
+`name`, `description` und `stat_bonus` überschreiben die Werte der Vorlage, wenn sie angegeben sind.
+- **Rechte:** nur GM/Admin.
+- **Rückgabe:** neue Item-ID, Format `"Item_<n>"`.
+- **Fehler:** `PermissionError`; `ValueError`, wenn die Vorlage nicht existiert oder ein
+  überschriebener Wert ungültig ist.
 
 ### `assignItemToCharacter(user_id, username, password_hash, item_id, character_id) -> None`
 Weist ein noch nicht zugewiesenes Item einem Charakter-Inventar zu.

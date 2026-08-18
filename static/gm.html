@@ -48,6 +48,16 @@
   </div>
 
   <div id="tab-create" style="display: none">
+    <section class="panel">
+      <h2>Item-Vorlagen</h2>
+      <p class="hint">Vorlagen speichern Name, Beschreibung und stat_bonus, um daraus schnell Items zu erzeugen.</p>
+      <table class="data-table" id="item-template-table">
+        <thead><tr><th>ID</th><th>Name</th><th>Beschreibung</th><th>stat_bonus</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="status" id="item-template-status"></div>
+    </section>
+
     <div id="forms"></div>
 
     <section class="panel">
@@ -85,6 +95,7 @@ let charactersByUser = {};
 let ownCharacters = [];
 let allCharacters = [];
 let itemCatalog = {};
+let itemTemplateCatalog = {};
 let skillCatalog = {};
 let spellCatalog = {};
 let statusCatalog = {};
@@ -225,6 +236,29 @@ function drawAllRows() {
   setStatus('all-status', count + ' Charakter(e) angezeigt.', true);
 }
 
+/* ---------- Item-Vorlagen ---------- */
+
+function renderItemTemplates() {
+  const body = document.querySelector('#item-template-table tbody');
+  body.innerHTML = '';
+  const ids = Object.keys(itemTemplateCatalog);
+  ids.forEach(templateId => {
+    const template = itemTemplateCatalog[templateId];
+    const bonuses = Object.keys(template.stat_bonus || {})
+      .filter(field => template.stat_bonus[field] !== 0)
+      .map(field => field + ' ' + (template.stat_bonus[field] > 0 ? '+' : '') + template.stat_bonus[field]);
+    const row = element('tr');
+    row.appendChild(element('td', 'mono', templateId));
+    row.appendChild(element('td', 'strong', template.name || ''));
+    row.appendChild(element('td', null, template.description || ''));
+    row.appendChild(element('td', 'muted', bonuses.length ? bonuses.join(', ') : '—'));
+    body.appendChild(row);
+  });
+  setStatus('item-template-status', ids.length
+    ? ids.length + ' Vorlage(n).'
+    : 'Noch keine Item-Vorlagen angelegt.', true);
+}
+
 /* ---------- Formulare ---------- */
 
 const FORMS = [
@@ -244,6 +278,34 @@ const FORMS = [
       { name: 'name', label: 'Name', type: 'text' },
       { name: 'description', label: 'Beschreibung', type: 'text' },
       { name: 'stat_bonus', label: 'stat_bonus', type: 'json', template: ITEM_STAT_FIELDS }
+    ]
+  },
+  {
+    title: 'Item-Vorlage erstellen',
+    endpoint: 'createItemTemplate',
+    hint: 'Vorlagen sind wiederverwendbare Baupläne für Items.',
+    fields: [
+      { name: 'name', label: 'Name', type: 'text' },
+      { name: 'description', label: 'Beschreibung', type: 'text' },
+      { name: 'stat_bonus', label: 'stat_bonus', type: 'json', template: ITEM_STAT_FIELDS }
+    ]
+  },
+  {
+    title: 'Item aus Vorlage erstellen',
+    endpoint: 'createItemFromTemplate',
+    hint: 'Leere Felder übernehmen den Wert aus der Vorlage.',
+    fields: [
+      { name: 'template_id', label: 'Vorlage', type: 'select', source: 'itemTemplates' },
+      { name: 'name', label: 'Name (optional)', type: 'text', optional: true },
+      { name: 'description', label: 'Beschreibung (optional)', type: 'text', optional: true },
+      { name: 'stat_bonus', label: 'stat_bonus (optional)', type: 'json', template: ITEM_STAT_FIELDS }
+    ]
+  },
+  {
+    title: 'Item-Vorlage löschen',
+    endpoint: 'deleteItemTemplate',
+    fields: [
+      { name: 'template_id', label: 'Vorlage', type: 'select', source: 'itemTemplates' }
     ]
   },
   {
@@ -320,6 +382,9 @@ function sourceOptions(source) {
   if (source === 'items') {
     return Object.keys(itemCatalog).map(id => [id, (itemCatalog[id].name || id) + ' (' + id + ')']);
   }
+  if (source === 'itemTemplates') {
+    return Object.keys(itemTemplateCatalog).map(id => [id, (itemTemplateCatalog[id].name || id) + ' (' + id + ')']);
+  }
   return [];
 }
 
@@ -388,6 +453,7 @@ async function submitForm(form, inputs, button, statusId) {
       body[name] = Number(raw);
     } else {
       if (raw === '') {
+        if (entry.field.optional) continue;
         setStatus(statusId, entry.field.label + ' darf nicht leer sein.', false);
         return;
       }
@@ -498,10 +564,11 @@ function listOf(result) {
 async function loadAll() {
   setStatus('page-status', 'Lade Daten …', true);
 
-  const [own, byUser, items, skills, spells, statuses] = await Promise.all([
+  const [own, byUser, items, itemTemplates, skills, spells, statuses] = await Promise.all([
     callApi('listOwnCharacters', credentials()),
     callApi('listAllCharactersByUser', credentials()),
     callApi('ListAllItems', credentials()),
+    callApi('listItemTemplates', credentials()),
     callApi('listAllSkills', credentials()),
     callApi('listAllSpellEffects', credentials()),
     callApi('listAllStatusEffects', credentials())
@@ -518,12 +585,14 @@ async function loadAll() {
   allCharacters = Object.keys(charactersByUser).reduce(
     (collected, userId) => collected.concat(charactersByUser[userId]), []);
   itemCatalog = catalogOf(items);
+  itemTemplateCatalog = catalogOf(itemTemplates);
   skillCatalog = catalogOf(skills);
   spellCatalog = catalogOf(spells);
   statusCatalog = catalogOf(statuses);
 
   renderOwn();
   renderAll();
+  renderItemTemplates();
   renderForms();
 
   const knownSelect = document.getElementById('known-character');

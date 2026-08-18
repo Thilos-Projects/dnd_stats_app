@@ -86,6 +86,27 @@ def TestForGlobalDocuments(executable_path: Path) -> tuple[dict, dict, dict, dic
             if value < -10 or value > 10:
                 raise ValueError(f"Item {item_id} has an invalid stat bonus '{stat}': {value}")
 
+    #test ItemTemplates.json (optional file, same shape as an item without owner/equipped):
+    item_templates_file_path = global_folder_path / "ItemTemplates.json"
+    if item_templates_file_path.exists():
+        with open(item_templates_file_path, "r", encoding="utf-8") as f:
+            try:
+                item_templates_data = json.load(f)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"ItemTemplates.json is not a valid json file: {e}")
+        for template_id, template in item_templates_data.items():
+            if not template_id.startswith("ItemTemplate_"):
+                raise ValueError(f"Item template id {template_id} does not start with 'ItemTemplate_'")
+            for field in ["name", "description", "stat_bonus"]:
+                if field not in template:
+                    raise ValueError(f"Item template {template_id} does not have the required field '{field}'")
+            for inner_field in inner_fields:
+                if inner_field not in template["stat_bonus"]:
+                    raise ValueError(f"Item template {template_id} does not have the required stat bonus field '{inner_field}'")
+            for stat, value in template["stat_bonus"].items():
+                if value < -10 or value > 10:
+                    raise ValueError(f"Item template {template_id} has an invalid stat bonus '{stat}': {value}")
+
     #test Skills.json:
     #each elements Key has to start with "Skill_" it has to contain thees fields:
     fields = ["name", "beschreibung", "stat_bonus", "talent_bonus", "skill_bonus", "alters_anstieg"]
