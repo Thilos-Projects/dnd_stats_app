@@ -145,14 +145,17 @@ def TestForGlobalDocuments(executable_path: Path) -> tuple[dict, dict, dict, dic
             if field not in skill.get("skill_bonus", {}):
                 raise ValueError(f"Skill {skill_id} does not have the required skill field '{field}'")
         for stat, value in skill.get("stat_bonus", {}).items():
-            if value < -10 or value > 10:
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or value < -2 or value > 2:
                 raise ValueError(f"Skill {skill_id} has an invalid stat bonus '{stat}': {value}")
         for talent, value in skill.get("talent_bonus", {}).items():
-            if value < -10 or value > 10:
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or value < -2 or value > 2:
                 raise ValueError(f"Skill {skill_id} has an invalid talent bonus '{talent}': {value}")
         for skill_name, value in skill.get("skill_bonus", {}).items():
-            if value < -10 or value > 10:
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or value < -2 or value > 2:
                 raise ValueError(f"Skill {skill_id} has an invalid skill bonus '{skill_name}': {value}")
+        learning_time = skill["alters_anstieg"]
+        if isinstance(learning_time, bool) or not isinstance(learning_time, (int, float)) or learning_time < 0:
+            raise ValueError(f"Skill {skill_id} has an invalid alters_anstieg: {learning_time}")
 
     #spellEffects.json:
     #each elements Key has to start with "SpellEffect_" it has to contain thees fields:

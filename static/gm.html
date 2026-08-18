@@ -48,15 +48,7 @@
   </div>
 
   <div id="tab-create" style="display: none">
-    <section class="panel">
-      <h2>Item-Vorlagen</h2>
-      <p class="hint">Vorlagen speichern Name, Beschreibung und stat_bonus, um daraus schnell Items zu erzeugen.</p>
-      <table class="data-table" id="item-template-table">
-        <thead><tr><th>ID</th><th>Name</th><th>Beschreibung</th><th>stat_bonus</th></tr></thead>
-        <tbody></tbody>
-      </table>
-      <div class="status" id="item-template-status"></div>
-    </section>
+    <div id="catalogs"></div>
 
     <div id="forms"></div>
 
@@ -74,6 +66,7 @@
         <button id="known-load">Laden</button>
         <button class="accent" id="known-save">Speichern</button>
       </div>
+      <input type="text" id="known-filter" class="filter" placeholder="Einträge filtern …">
       <div class="scroll-list" id="known-list"></div>
       <div class="status" id="known-status"></div>
     </section>
@@ -236,27 +229,125 @@ function drawAllRows() {
   setStatus('all-status', count + ' Charakter(e) angezeigt.', true);
 }
 
-/* ---------- Item-Vorlagen ---------- */
+/* ---------- Übersichtslisten (Kataloge) ---------- */
 
-function renderItemTemplates() {
-  const body = document.querySelector('#item-template-table tbody');
-  body.innerHTML = '';
-  const ids = Object.keys(itemTemplateCatalog);
-  ids.forEach(templateId => {
-    const template = itemTemplateCatalog[templateId];
-    const bonuses = Object.keys(template.stat_bonus || {})
-      .filter(field => template.stat_bonus[field] !== 0)
-      .map(field => field + ' ' + (template.stat_bonus[field] > 0 ? '+' : '') + template.stat_bonus[field]);
-    const row = element('tr');
-    row.appendChild(element('td', 'mono', templateId));
-    row.appendChild(element('td', 'strong', template.name || ''));
-    row.appendChild(element('td', null, template.description || ''));
-    row.appendChild(element('td', 'muted', bonuses.length ? bonuses.join(', ') : '—'));
-    body.appendChild(row);
+const CATALOG_PANELS = [
+  {
+    title: 'Item-Vorlagen',
+    hint: 'Vorlagen speichern Name, Beschreibung und stat_bonus, um daraus schnell Items zu erzeugen.',
+    empty: 'Noch keine Item-Vorlagen angelegt.',
+    catalog: () => itemTemplateCatalog
+  },
+  {
+    title: 'Skills',
+    hint: 'Alle global verfügbaren Skills (learned_abilities).',
+    empty: 'Noch keine Skills angelegt.',
+    catalog: () => skillCatalog
+  },
+  {
+    title: 'Zaubereffekte',
+    empty: 'Noch keine Zaubereffekte angelegt.',
+    catalog: () => spellCatalog
+  },
+  {
+    title: 'Statuseffekte',
+    empty: 'Noch keine Statuseffekte angelegt.',
+    catalog: () => statusCatalog
+  }
+];
+
+const catalogRenderers = [];
+
+function catalogDescription(entry) {
+  return entry.description || entry.beschreibung || '';
+}
+
+function bonusSummary(entry) {
+  const parts = [];
+  ['stat_bonus', 'talent_bonus', 'skill_bonus'].forEach(group => {
+    const bonuses = entry[group];
+    if (!bonuses || typeof bonuses !== 'object') return;
+    Object.keys(bonuses).forEach(field => {
+      const value = bonuses[field];
+      if (value) parts.push(field + ' ' + (value > 0 ? '+' : '') + value);
+    });
   });
-  setStatus('item-template-status', ids.length
-    ? ids.length + ' Vorlage(n).'
-    : 'Noch keine Item-Vorlagen angelegt.', true);
+  return parts;
+}
+
+function drawCatalogRows(spec, tbody, status, needle) {
+  tbody.innerHTML = '';
+  const catalog = spec.catalog();
+  const ids = Object.keys(catalog);
+  let shown = 0;
+
+  ids.forEach(id => {
+    const entry = catalog[id];
+    const description = catalogDescription(entry);
+    if (needle && !(id + ' ' + (entry.name || '') + ' ' + description).toLowerCase().includes(needle)) return;
+    const bonuses = bonusSummary(entry);
+    const row = element('tr');
+    row.appendChild(element('td', 'mono', id));
+    row.appendChild(element('td', 'strong', entry.name || ''));
+    row.appendChild(element('td', null, description));
+    row.appendChild(element('td', 'muted', bonuses.length ? bonuses.join(', ') : '—'));
+    tbody.appendChild(row);
+    shown += 1;
+  });
+
+  status.className = 'status ok';
+  status.textContent = ids.length ? shown + ' von ' + ids.length + ' Eintrag/Einträgen angezeigt.' : spec.empty;
+}
+
+function buildCatalogPanels() {
+  const container = document.getElementById('catalogs');
+  container.innerHTML = '';
+  catalogRenderers.length = 0;
+
+  CATALOG_PANELS.forEach(spec => {
+    const panel = element('section', 'panel');
+    const heading = element('h2', null, spec.title + ' ');
+    const toggle = element('button', 'small', 'Ausklappen');
+    toggle.setAttribute('aria-expanded', 'false');
+    heading.appendChild(toggle);
+    panel.appendChild(heading);
+
+    const body = element('div');
+    body.style.display = 'none';
+    toggle.onclick = () => {
+      const collapsed = body.style.display === 'none';
+      body.style.display = collapsed ? '' : 'none';
+      toggle.textContent = collapsed ? 'Einklappen' : 'Ausklappen';
+      toggle.setAttribute('aria-expanded', String(collapsed));
+    };
+
+    if (spec.hint) body.appendChild(element('p', 'hint', spec.hint));
+
+    const search = element('input', 'filter');
+    search.type = 'text';
+    search.placeholder = 'Suchen …';
+    body.appendChild(search);
+
+    const table = element('table', 'data-table');
+    const headRow = element('tr');
+    ['ID', 'Name', 'Beschreibung', 'Boni'].forEach(text => headRow.appendChild(element('th', null, text)));
+    table.appendChild(element('thead')).appendChild(headRow);
+    const tbody = table.appendChild(element('tbody'));
+    body.appendChild(table);
+
+    const status = element('div', 'status', '');
+    body.appendChild(status);
+    panel.appendChild(body);
+    container.appendChild(panel);
+
+    const draw = () => drawCatalogRows(spec, tbody, status, search.value.toLowerCase());
+    search.oninput = draw;
+    catalogRenderers.push(draw);
+  });
+}
+
+function renderCatalogs() {
+  catalogRenderers.forEach(draw => draw());
 }
 
 /* ---------- Formulare ---------- */
@@ -295,7 +386,7 @@ const FORMS = [
     endpoint: 'createItemFromTemplate',
     hint: 'Leere Felder übernehmen den Wert aus der Vorlage.',
     fields: [
-      { name: 'template_id', label: 'Vorlage', type: 'select', source: 'itemTemplates' },
+      { name: 'template_id', label: 'Vorlage', type: 'select', source: 'itemTemplates', searchable: true },
       { name: 'name', label: 'Name (optional)', type: 'text', optional: true },
       { name: 'description', label: 'Beschreibung (optional)', type: 'text', optional: true },
       { name: 'stat_bonus', label: 'stat_bonus (optional)', type: 'json', template: ITEM_STAT_FIELDS }
@@ -305,7 +396,7 @@ const FORMS = [
     title: 'Item-Vorlage löschen',
     endpoint: 'deleteItemTemplate',
     fields: [
-      { name: 'template_id', label: 'Vorlage', type: 'select', source: 'itemTemplates' }
+      { name: 'template_id', label: 'Vorlage', type: 'select', source: 'itemTemplates', searchable: true }
     ]
   },
   {
@@ -406,7 +497,23 @@ function renderForms() {
       let input;
       if (field.type === 'select') {
         input = element('select');
-        sourceOptions(field.source).forEach(entry => input.appendChild(option(entry[0], entry[1])));
+        const entries = sourceOptions(field.source);
+        const fill = needle => {
+          const previous = input.value;
+          input.innerHTML = '';
+          entries
+            .filter(entry => !needle || (entry[1] + ' ' + entry[0]).toLowerCase().includes(needle))
+            .forEach(entry => input.appendChild(option(entry[0], entry[1])));
+          input.value = previous;
+        };
+        fill('');
+        if (field.searchable) {
+          const search = element('input', 'filter');
+          search.type = 'text';
+          search.placeholder = 'Suchen …';
+          search.oninput = () => fill(search.value.toLowerCase());
+          wrapper.appendChild(search);
+        }
       } else if (field.type === 'json') {
         input = element('textarea');
         input.rows = 3;
@@ -515,6 +622,7 @@ async function loadKnown() {
   knownEntries(type).forEach(entry => {
     if (entry[0] === characterId) return;
     const row = element('label', 'check-row');
+    row.dataset.search = (entry[0] + ' ' + entry[1]).toLowerCase();
     const box = element('input');
     box.type = 'checkbox';
     box.value = entry[0];
@@ -525,7 +633,16 @@ async function loadKnown() {
     list.appendChild(row);
   });
 
+  filterKnownList();
   setStatus('known-status', active.length + ' Einträge aktuell bekannt.', true);
+}
+
+// Ausgeblendete Zeilen bleiben angehakt, damit Filtern keine Auswahl verwirft.
+function filterKnownList() {
+  const needle = document.getElementById('known-filter').value.toLowerCase();
+  document.querySelectorAll('#known-list .check-row').forEach(row => {
+    row.style.display = !needle || row.dataset.search.includes(needle) ? '' : 'none';
+  });
 }
 
 async function saveKnown() {
@@ -592,7 +709,7 @@ async function loadAll() {
 
   renderOwn();
   renderAll();
-  renderItemTemplates();
+  renderCatalogs();
   renderForms();
 
   const knownSelect = document.getElementById('known-character');
@@ -617,6 +734,9 @@ document.getElementById('all-filter').oninput = drawAllRows;
 document.getElementById('known-load').onclick = loadKnown;
 document.getElementById('known-save').onclick = saveKnown;
 document.getElementById('known-type').onchange = loadKnown;
+document.getElementById('known-filter').oninput = filterKnownList;
+
+buildCatalogPanels();
 
 document.querySelectorAll('#sheet-tabs .tab').forEach(tab => {
   tab.onclick = () => {

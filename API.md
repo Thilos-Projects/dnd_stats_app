@@ -174,7 +174,7 @@ Erstellt ein neues, noch niemandem zugewiesenes Item.
   - `description` — String (darf leer sein).
   - `stat_bonus` — optionales Dict mit genau den Feldern `Mut, Klugheit, Intuition, Charisma,
     Fingerfertigkeit, Gewandheit, Konstitution, Körperkraft, MagieSpeicher, MagieRegeneration`,
-    jeweils ganzzahlig zwischen -10 und 10. Fehlt es, werden alle Werte auf 0 gesetzt.
+    jeweils numerisch zwischen -10 und 10; Dezimalwerte sind erlaubt. Fehlt es, werden alle Werte auf 0 gesetzt.
 - **Rechte:** nur GM/Admin.
 - **Rückgabe:** neue Item-ID, Format `"Item_<n>"`.
 - **Fehler:** `PermissionError`; `ValueError` bei ungültigem Namen/Beschreibung/`stat_bonus`.
@@ -267,13 +267,16 @@ Erstellt einen neuen Skill.
   - `wuerfe_zum_einsetzen` — String, beschreibt notwendige Würfe (z. B. `1d20`, `2d6+3`).
   - `effekt` — String, beschreibt den Effekt bei erfolgreichem Einsatz.
   - `stat_bonus` — optionales Dict mit den Feldern `Mut, Klugheit, Intuition, Charisma,
-    Fingerfertigkeit, Gewandheit, Konstitution, Körperkraft`, jeweils ganzzahlig zwischen -10 und 10.
+    Fingerfertigkeit, Gewandheit, Konstitution, Körperkraft`, jeweils numerisch zwischen -2 und 2.
+    Dezimalwerte sind erlaubt.
     Fehlt es, werden alle Werte auf 0 gesetzt.
   - `talent_bonus` — optionales Dict mit den Feldern `Körpertalent, Geseltschaftstalent,
-    Naturtalent, Wissenstalent, Handwerkstalent`, jeweils ganzzahlig zwischen -10 und 10.
+    Naturtalent, Wissenstalent, Handwerkstalent`, jeweils numerisch zwischen -2 und 2.
+    Dezimalwerte sind erlaubt.
   - `skill_bonus` — optionales Dict über alle bekannten Skill-Namen (z. B. `Klettern`, `Singen`, …),
-    jeweils ganzzahlig zwischen -10 und 10.
-  - `alters_anstieg` — Ganzzahl, Standard `0`.
+    jeweils numerisch zwischen -2 und 2. Dezimalwerte sind erlaubt.
+  - `alters_anstieg` — nichtnegative Lernzeit in Jahren, Standard `0`. Dezimalwerte sind erlaubt;
+    zwei Monate werden beispielsweise als `0.17` erfasst.
 - **Rechte:** nur GM/Admin.
 - **Fehler:** `PermissionError`; `ValueError` bei ungültigem Namen/Bonus-Dict/`alters_anstieg`.
 

@@ -1,22 +1,4 @@
 {
-  "Item_1": {
-    "name": "Test",
-    "description": "nee",
-    "owner": "Charakter_Test",
-    "equipped": true,
-    "stat_bonus": {
-      "Mut": 0,
-      "Klugheit": 0,
-      "Intuition": 0,
-      "Charisma": 0,
-      "Fingerfertigkeit": 0,
-      "Gewandheit": 0,
-      "Konstitution": 0,
-      "Körperkraft": 0,
-      "MagieSpeicher": 0,
-      "MagieRegeneration": 0
-    }
-  },
   "Item_2": {
     "name": "ManaBlocker",
     "description": "Castet einen Spell(Utility 3 Knochenbrecher) wenn der Träger einen spell casting abschließt, und verhindert so den Spell Des Casters",
@@ -59,10 +41,10 @@
     "owner": "Charakter_Wache_Generic",
     "equipped": false,
     "stat_bonus": {
-      "Mut": 2,
+      "Mut": 0.6,
       "Klugheit": 0,
       "Intuition": 0,
-      "Charisma": -1,
+      "Charisma": -0.3,
       "Fingerfertigkeit": 0,
       "Gewandheit": 0,
       "Konstitution": 0,
@@ -82,9 +64,9 @@
       "Intuition": 0,
       "Charisma": 0,
       "Fingerfertigkeit": 0,
-      "Gewandheit": -2,
-      "Konstitution": 2,
-      "Körperkraft": 1,
+      "Gewandheit": -0.6,
+      "Konstitution": 0.6,
+      "Körperkraft": 0.3,
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
     }
@@ -95,14 +77,14 @@
     "owner": null,
     "equipped": false,
     "stat_bonus": {
-      "Mut": 1,
+      "Mut": 0.3,
       "Klugheit": 0,
       "Intuition": 0,
       "Charisma": 0,
-      "Fingerfertigkeit": -1,
+      "Fingerfertigkeit": -0.3,
       "Gewandheit": 0,
       "Konstitution": 0,
-      "Körperkraft": 1,
+      "Körperkraft": 0.3,
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
     }
@@ -117,10 +99,10 @@
       "Klugheit": 0,
       "Intuition": 0,
       "Charisma": 0,
-      "Fingerfertigkeit": 1,
-      "Gewandheit": 1,
+      "Fingerfertigkeit": 0.3,
+      "Gewandheit": 0.3,
       "Konstitution": 0,
-      "Körperkraft": -1,
+      "Körperkraft": -0.3,
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
     }
@@ -131,14 +113,14 @@
     "owner": null,
     "equipped": false,
     "stat_bonus": {
-      "Mut": 1,
+      "Mut": 0.3,
       "Klugheit": 0,
       "Intuition": 0,
       "Charisma": 0,
-      "Fingerfertigkeit": -1,
+      "Fingerfertigkeit": -0.3,
       "Gewandheit": 0,
       "Konstitution": 0,
-      "Körperkraft": 1,
+      "Körperkraft": 0.3,
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
     }
@@ -149,13 +131,13 @@
     "owner": null,
     "equipped": false,
     "stat_bonus": {
-      "Mut": -2,
+      "Mut": -0.6,
       "Klugheit": 0,
       "Intuition": 0,
-      "Charisma": -2,
-      "Fingerfertigkeit": 1,
-      "Gewandheit": 1,
-      "Konstitution": -1,
+      "Charisma": -0.6,
+      "Fingerfertigkeit": 0.3,
+      "Gewandheit": 0.3,
+      "Konstitution": -0.3,
       "Körperkraft": 0,
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
@@ -167,14 +149,14 @@
     "owner": null,
     "equipped": false,
     "stat_bonus": {
-      "Mut": -2,
+      "Mut": -0.6,
       "Klugheit": 0,
       "Intuition": 0,
-      "Charisma": -2,
-      "Fingerfertigkeit": 1,
-      "Gewandheit": -1,
+      "Charisma": -0.6,
+      "Fingerfertigkeit": 0.3,
+      "Gewandheit": -0.3,
       "Konstitution": 0,
-      "Körperkraft": 1,
+      "Körperkraft": 0.3,
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
     }
@@ -189,10 +171,10 @@
       "Klugheit": 0,
       "Intuition": 0,
       "Charisma": 0,
-      "Fingerfertigkeit": 2,
-      "Gewandheit": 1,
+      "Fingerfertigkeit": 0.6,
+      "Gewandheit": 0.3,
       "Konstitution": 0,
-      "Körperkraft": -1,
+      "Körperkraft": -0.3,
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
     }
@@ -203,14 +185,14 @@
     "owner": null,
     "equipped": false,
     "stat_bonus": {
-      "Mut": 1,
+      "Mut": 0.3,
       "Klugheit": 0,
       "Intuition": 0,
       "Charisma": 0,
       "Fingerfertigkeit": 0,
-      "Gewandheit": 1,
+      "Gewandheit": 0.3,
       "Konstitution": 0,
-      "Körperkraft": 1,
+      "Körperkraft": 0.3,
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
     }
@@ -225,10 +207,10 @@
       "Klugheit": 0,
       "Intuition": 0,
       "Charisma": 0,
-      "Fingerfertigkeit": 2,
-      "Gewandheit": 1,
+      "Fingerfertigkeit": 0.6,
+      "Gewandheit": 0.3,
       "Konstitution": 0,
-      "Körperkraft": -1,
+      "Körperkraft": -0.3,
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
     }
@@ -243,10 +225,10 @@
       "Klugheit": 0,
       "Intuition": 0,
       "Charisma": 0,
-      "Fingerfertigkeit": 1,
-      "Gewandheit": 1,
+      "Fingerfertigkeit": 0.3,
+      "Gewandheit": 0.3,
       "Konstitution": 0,
-      "Körperkraft": -2,
+      "Körperkraft": -0.6,
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
     }
@@ -261,10 +243,10 @@
       "Klugheit": 0,
       "Intuition": 0,
       "Charisma": 0,
-      "Fingerfertigkeit": 2,
-      "Gewandheit": 1,
+      "Fingerfertigkeit": 0.6,
+      "Gewandheit": 0.3,
       "Konstitution": 0,
-      "Körperkraft": -1,
+      "Körperkraft": -0.3,
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
     }
@@ -281,8 +263,8 @@
       "Charisma": 0,
       "Fingerfertigkeit": 0,
       "Gewandheit": 0,
-      "Konstitution": 1,
-      "Körperkraft": 1,
+      "Konstitution": 0.3,
+      "Körperkraft": 0.3,
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
     }
@@ -298,9 +280,9 @@
       "Intuition": 0,
       "Charisma": 0,
       "Fingerfertigkeit": 0,
-      "Gewandheit": -1,
-      "Konstitution": 1,
-      "Körperkraft": 2,
+      "Gewandheit": -0.3,
+      "Konstitution": 0.3,
+      "Körperkraft": 0.6,
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
     }
@@ -315,8 +297,8 @@
       "Klugheit": 0,
       "Intuition": 0,
       "Charisma": 0,
-      "Fingerfertigkeit": 1,
-      "Gewandheit": 1,
+      "Fingerfertigkeit": 0.3,
+      "Gewandheit": 0.3,
       "Konstitution": 0,
       "Körperkraft": 0,
       "MagieSpeicher": 0,
@@ -329,14 +311,14 @@
     "owner": null,
     "equipped": false,
     "stat_bonus": {
-      "Mut": 1,
+      "Mut": 0.3,
       "Klugheit": 0,
       "Intuition": 0,
       "Charisma": 0,
       "Fingerfertigkeit": 0,
       "Gewandheit": 0,
       "Konstitution": 0,
-      "Körperkraft": 2,
+      "Körperkraft": 0.6,
       "MagieSpeicher": 0,
       "MagieRegeneration": 0
     }

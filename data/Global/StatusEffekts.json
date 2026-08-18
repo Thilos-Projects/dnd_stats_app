@@ -1,1 +1,1052 @@
-{}
+{
+  "StatusEffekt_1": {
+    "name": "Schnittwunde I - oberfl\u00e4chlich",
+    "beschreibung": "Kleine Klingenwunde, schmerzhaft aber sauber versorgt. Dauer: 24 Stunden.",
+    "default duration": 24,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": -0.5,
+      "Gewandheit": 0,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_2": {
+    "name": "Schnittwunde II - tief",
+    "beschreibung": "Tiefe Klingenwunde mit Blutverlust; Ruhe und Verband sind n\u00f6tig. Dauer: 72 Stunden.",
+    "default duration": 72,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": -1,
+      "Gewandheit": 0,
+      "Konstitution": -0.5,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -0.5,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_3": {
+    "name": "Schnittwunde III - zerfetzt",
+    "beschreibung": "Schwere Schnittverletzung mit anhaltendem Blutverlust und hohem Infektionsrisiko. Dauer: 168 Stunden. Ohne Behandlung kann der Zustand nach 72 Stunden t\u00f6dlich werden.",
+    "default duration": 168,
+    "default time to death": 72,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": -1.5,
+      "Gewandheit": 0,
+      "Konstitution": -1,
+      "K\u00f6rperkraft": -0.5,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -1,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_4": {
+    "name": "Stichwunde I - Fleischwunde",
+    "beschreibung": "Flache Stichverletzung durch Dolch, Speer oder Pfeil. Dauer: 48 Stunden.",
+    "default duration": 48,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": -0.5,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_5": {
+    "name": "Stichwunde II - tief",
+    "beschreibung": "Tiefe Stichverletzung; jede starke Bewegung belastet die Wunde. Dauer: 120 Stunden. Ohne Behandlung kann der Zustand nach 96 Stunden t\u00f6dlich werden.",
+    "default duration": 120,
+    "default time to death": 96,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -1,
+      "K\u00f6rperkraft": -0.5,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -0.5,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_6": {
+    "name": "Stichwunde III - kritisch",
+    "beschreibung": "Kritische Stichverletzung in Rumpf oder Hals; unverz\u00fcgliche Behandlung ist n\u00f6tig. Dauer: 240 Stunden. Ohne Behandlung kann der Zustand nach 24 Stunden t\u00f6dlich werden.",
+    "default duration": 240,
+    "default time to death": 24,
+    "stat_bonus": {
+      "Mut": -0.5,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -1.5,
+      "K\u00f6rperkraft": -1,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -1,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_7": {
+    "name": "Pfeilwunde I - streifend",
+    "beschreibung": "Pfeil oder Bolzen hat nur Fleisch gestreift. Dauer: 48 Stunden.",
+    "default duration": 48,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": -0.5,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_8": {
+    "name": "Pfeilwunde II - steckend",
+    "beschreibung": "Pfeil oder Bolzen steckt noch oder hat eine tiefe Wunde hinterlassen. Dauer: 144 Stunden. Ohne Behandlung kann der Zustand nach 72 Stunden t\u00f6dlich werden.",
+    "default duration": 144,
+    "default time to death": 72,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": -1,
+      "Gewandheit": 0,
+      "Konstitution": -0.5,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_9": {
+    "name": "Pfeilwunde III - Durchschuss",
+    "beschreibung": "Durchschuss mit schwerem Blutverlust; Behandlung und lange Ruhe sind erforderlich. Dauer: 240 Stunden. Ohne Behandlung kann der Zustand nach 36 Stunden t\u00f6dlich werden.",
+    "default duration": 240,
+    "default time to death": 36,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -1.5,
+      "K\u00f6rperkraft": -1,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -1,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_10": {
+    "name": "Quetschung I - Prellung",
+    "beschreibung": "Prellung durch Keule, Sturz oder Schildsto\u00df. Dauer: 36 Stunden.",
+    "default duration": 36,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": -0.5,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_11": {
+    "name": "Quetschung II - tiefer Bluterguss",
+    "beschreibung": "Schwere Prellung; Kraft und Beweglichkeit sind eingeschr\u00e4nkt. Dauer: 96 Stunden.",
+    "default duration": 96,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": -0.5,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": -1,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_12": {
+    "name": "Quetschung III - innere Verletzung",
+    "beschreibung": "M\u00f6gliche innere Verletzung nach einem harten Treffer oder Sturz. Dauer: 168 Stunden. Ohne Behandlung kann der Zustand nach 72 Stunden t\u00f6dlich werden.",
+    "default duration": 168,
+    "default time to death": 72,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -1.5,
+      "K\u00f6rperkraft": -1,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -0.5,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_13": {
+    "name": "Brandwunde I - versengt",
+    "beschreibung": "Leichte Verbrennung durch Feuer, Dampf oder Glut. Dauer: 48 Stunden.",
+    "default duration": 48,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": -0.5,
+      "Gewandheit": 0,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_14": {
+    "name": "Brandwunde II - blasenbildend",
+    "beschreibung": "Schmerzhafte Verbrennung mit Blasen und empfindlicher Haut. Dauer: 144 Stunden.",
+    "default duration": 144,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": -1,
+      "Gewandheit": 0,
+      "Konstitution": -0.5,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_15": {
+    "name": "Brandwunde III - tief",
+    "beschreibung": "Tiefe Verbrennung; Bewegung und Belastung sind stark eingeschr\u00e4nkt. Dauer: 336 Stunden. Ohne Behandlung kann der Zustand nach 120 Stunden t\u00f6dlich werden.",
+    "default duration": 336,
+    "default time to death": 120,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": -1.5,
+      "Gewandheit": 0,
+      "Konstitution": -1,
+      "K\u00f6rperkraft": -0.5,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -1,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_16": {
+    "name": "Knochenbruch I - Haarriss",
+    "beschreibung": "Kleiner Knochenriss; Schiene und Schonung verhindern eine Verschlimmerung. Dauer: 336 Stunden.",
+    "default duration": 336,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": -1,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": -0.5,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_17": {
+    "name": "Knochenbruch II - Arm",
+    "beschreibung": "Gebrochener Arm oder Handgelenk; zweih\u00e4ndige Arbeit und Paraden sind stark erschwert. Dauer: 672 Stunden.",
+    "default duration": 672,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": -2,
+      "Gewandheit": 0,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": -1,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -1,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_18": {
+    "name": "Knochenbruch III - Bein",
+    "beschreibung": "Gebrochenes Bein oder Kn\u00f6chel; schnelles Gehen, Ausweichen und Reiten sind kaum m\u00f6glich. Dauer: 840 Stunden.",
+    "default duration": 840,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": -2,
+      "Konstitution": -1,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -1.5,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_19": {
+    "name": "Knochenbruch IV - mehrfach",
+    "beschreibung": "Mehrfacher oder offener Bruch; fachkundige Versorgung ist dringend notwendig. Dauer: 1440 Stunden. Ohne Behandlung kann der Zustand nach 168 Stunden t\u00f6dlich werden.",
+    "default duration": 1440,
+    "default time to death": 168,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": -2,
+      "Konstitution": -1.5,
+      "K\u00f6rperkraft": -2,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -2,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_20": {
+    "name": "Wundinfektion I - gereizt",
+    "beschreibung": "Ger\u00f6tete, schmerzende Wunde; Reinigung und Beobachtung sind n\u00f6tig. Dauer: 96 Stunden.",
+    "default duration": 96,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -0.5,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_21": {
+    "name": "Wundinfektion II - fiebrig",
+    "beschreibung": "Entz\u00fcndete Wunde mit Fieber und Schw\u00e4che. Dauer: 168 Stunden. Ohne Behandlung kann der Zustand nach 120 Stunden t\u00f6dlich werden.",
+    "default duration": 168,
+    "default time to death": 120,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": -0.5,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -1,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -0.5,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_22": {
+    "name": "Wundbrand - schwer",
+    "beschreibung": "Unbehandelte Infektion mit hohem Risiko f\u00fcr bleibende Sch\u00e4den oder Tod. Dauer: 336 Stunden. Ohne Behandlung kann der Zustand nach 48 Stunden t\u00f6dlich werden.",
+    "default duration": 336,
+    "default time to death": 48,
+    "stat_bonus": {
+      "Mut": -0.5,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -2,
+      "K\u00f6rperkraft": -1,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -1.5,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_23": {
+    "name": "Erkaeltung - leicht",
+    "beschreibung": "Husten, Fr\u00f6steln und schlechter Schlaf. Dauer: 120 Stunden.",
+    "default duration": 120,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": -0.5,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -0.5,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_24": {
+    "name": "Sumpffieber - fiebrig",
+    "beschreibung": "Wellen aus Fieber, Sch\u00fcttelfrost und Ersch\u00f6pfung nach Kontakt mit Sumpfwasser oder Insekten. Dauer: 240 Stunden.",
+    "default duration": 240,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": -1,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -1,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": -0.5,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_25": {
+    "name": "Sumpffieber - schwer",
+    "beschreibung": "Starkes Fieber, Orientierungslosigkeit und wiederkehrende Schw\u00e4che. Dauer: 480 Stunden. Ohne Behandlung kann der Zustand nach 120 Stunden t\u00f6dlich werden.",
+    "default duration": 480,
+    "default time to death": 120,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": -1.5,
+      "Intuition": -0.5,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -1.5,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -1,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_26": {
+    "name": "Tunnelhusten",
+    "beschreibung": "Staub und Pilzsporen reizen die Lunge; lange Belastung verschlimmert den Zustand. Dauer: 336 Stunden.",
+    "default duration": 336,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -1,
+      "K\u00f6rperkraft": -0.5,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_27": {
+    "name": "Magenf\u00e4ule",
+    "beschreibung": "Verdorbene Nahrung verursacht Kr\u00e4mpfe, Durst und Schw\u00e4che. Dauer: 72 Stunden.",
+    "default duration": 72,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -1,
+      "K\u00f6rperkraft": -0.5,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_28": {
+    "name": "Ruhr",
+    "beschreibung": "Anhaltende Darmerkrankung mit Fl\u00fcssigkeitsverlust; sauberes Wasser und Ruhe helfen. Dauer: 168 Stunden. Ohne Behandlung kann der Zustand nach 96 Stunden t\u00f6dlich werden.",
+    "default duration": 168,
+    "default time to death": 96,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -1.5,
+      "K\u00f6rperkraft": -1,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_29": {
+    "name": "Schlafmohn - benommen",
+    "beschreibung": "Leichtes Schlafmittel; Reaktionen und Wahrnehmung sind ged\u00e4mpft. Dauer: 12 Stunden.",
+    "default duration": 12,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": -1,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": -0.5,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": -0.5,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_30": {
+    "name": "Schlafmohn - tief",
+    "beschreibung": "Starkes Schlafmittel; die Person schl\u00e4ft oder kann nur schwer wach bleiben. Dauer: 24 Stunden.",
+    "default duration": 24,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": -2,
+      "Intuition": -1.5,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": -1,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_31": {
+    "name": "Nervengift - kribbelnd",
+    "beschreibung": "Mildes Kontaktgift verursacht Zittern und taube Finger. Dauer: 24 Stunden.",
+    "default duration": 24,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": -1,
+      "Gewandheit": -0.5,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_32": {
+    "name": "Nervengift - l\u00e4hmend",
+    "beschreibung": "Starkes Gift schw\u00e4cht Muskeln und Koordination. Dauer: 48 Stunden. Ohne Behandlung kann der Zustand nach 72 Stunden t\u00f6dlich werden.",
+    "default duration": 48,
+    "default time to death": 72,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": -2,
+      "Gewandheit": -1.5,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": -1,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -1,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_33": {
+    "name": "Blutgift - schwach",
+    "beschreibung": "Gift im Blut verursacht Schwindel und Kraftverlust. Dauer: 48 Stunden.",
+    "default duration": 48,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -1,
+      "K\u00f6rperkraft": -0.5,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_34": {
+    "name": "Blutgift - t\u00f6dlich",
+    "beschreibung": "Starkes Blutgift; ohne Gegenmittel oder Heilkunde droht Organversagen. Dauer: 96 Stunden. Ohne Behandlung kann der Zustand nach 24 Stunden t\u00f6dlich werden.",
+    "default duration": 96,
+    "default time to death": 24,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": -0.5,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": -2,
+      "K\u00f6rperkraft": -1.5,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": -1,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_35": {
+    "name": "Kraeuterst\u00e4rkung",
+    "beschreibung": "Langanhaltender Kr\u00e4utersud st\u00e4rkt Kreislauf und Widerstandskraft. Dauer: 168 Stunden.",
+    "default duration": 168,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": 0.5,
+      "K\u00f6rperkraft": 0.5,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0.5,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_36": {
+    "name": "Wachsalbe",
+    "beschreibung": "Langanhaltende Salbe gegen Steifheit und kalte Gelenke. Dauer: 120 Stunden.",
+    "default duration": 120,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0.5,
+      "Gewandheit": 0.5,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_37": {
+    "name": "Bergarbeitertee",
+    "beschreibung": "Bitterer Tee h\u00e4lt wach und stabilisiert die Nerven bei langer Arbeit im Dunkeln. Dauer: 96 Stunden.",
+    "default duration": 96,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0.5,
+      "Intuition": 0.5,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0.5,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_38": {
+    "name": "Schutzsegen",
+    "beschreibung": "Langanhaltender ritueller Segen f\u00fcr Zuversicht und Standhaftigkeit. Dauer: 240 Stunden.",
+    "default duration": 240,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 1,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": 0.5,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0.5,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_39": {
+    "name": "J\u00e4gertrank",
+    "beschreibung": "Langanhaltender Kr\u00e4utertrank sch\u00e4rft Sinne und ruhige Bewegung. Dauer: 144 Stunden.",
+    "default duration": 144,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 1,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0.5,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0.5,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_40": {
+    "name": "Kampfrausch",
+    "beschreibung": "Anhaltende Mischung aus Trommeln, Schmerz und Kr\u00e4utern; macht stark, aber unvorsichtig. Dauer: 72 Stunden.",
+    "default duration": 72,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 1.5,
+      "Klugheit": -0.5,
+      "Intuition": -0.5,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": 1,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 1,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_41": {
+    "name": "Schattenmantel",
+    "beschreibung": "Langanhaltende dunkle Tinktur; d\u00e4mpft Selbstvertrauen, hilft aber beim ungesehenen Verhalten. Dauer: 120 Stunden.",
+    "default duration": 120,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0.5,
+      "Charisma": -0.5,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": 0,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 0,
+      "MagieRegeneration": 0
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0.5,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  },
+  "StatusEffekt_42": {
+    "name": "Arkane Ruhe",
+    "beschreibung": "Langanhaltende Meditation oder Tinktur stabilisiert den Magiespeicher, macht jedoch k\u00f6rperlich tr\u00e4ge. Dauer: 144 Stunden.",
+    "default duration": 144,
+    "default time to death": 0,
+    "stat_bonus": {
+      "Mut": 0,
+      "Klugheit": 0,
+      "Intuition": 0,
+      "Charisma": 0,
+      "Fingerfertigkeit": 0,
+      "Gewandheit": -0.5,
+      "Konstitution": 0,
+      "K\u00f6rperkraft": 0,
+      "MagieSpeicher": 1,
+      "MagieRegeneration": 0.5
+    },
+    "talent_bonus": {
+      "K\u00f6rpertalent": 0,
+      "Geseltschaftstalent": 0,
+      "Naturtalent": 0,
+      "Wissenstalent": 0,
+      "Handwerkstalent": 0
+    }
+  }
+}

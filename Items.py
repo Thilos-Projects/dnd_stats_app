@@ -74,15 +74,15 @@ def _load_item_templates() -> dict[str, Any]:
         return {}
     return _load_json(ITEM_TEMPLATES_PATH)
 
-def _normalise_stat_bonus(stat_bonus: dict[str, int] | None) -> dict[str, int]:
+def _normalise_stat_bonus(stat_bonus: dict[str, int | float] | None) -> dict[str, int | float]:
     bonuses = {field: 0 for field in STAT_BONUS_FIELDS}
     if stat_bonus is None:
         return bonuses
     if set(stat_bonus) != set(STAT_BONUS_FIELDS):
         raise ValueError(f"stat_bonus must contain exactly: {', '.join(STAT_BONUS_FIELDS)}")
     for field, value in stat_bonus.items():
-        if isinstance(value, bool) or not isinstance(value, int) or not -10 <= value <= 10:
-            raise ValueError(f"Stat bonus {field} must be an integer between -10 and 10")
+        if isinstance(value, bool) or not isinstance(value, int | float) or not -10 <= value <= 10:
+            raise ValueError(f"Stat bonus {field} must be a number between -10 and 10")
         bonuses[field] = value
     return bonuses
 
@@ -101,7 +101,7 @@ def createItem(
     password_hash: str,
     name: str,
     description: str,
-    stat_bonus: dict[str, int] | None = None,
+    stat_bonus: dict[str, int | float] | None = None,
 ) -> str:
     """Create an unassigned item and return its generated item ID."""
     _require_manager(user_id, username, password_hash)
@@ -128,7 +128,7 @@ def createItemTemplate(
     password_hash: str,
     name: str,
     description: str,
-    stat_bonus: dict[str, int] | None = None,
+    stat_bonus: dict[str, int | float] | None = None,
 ) -> str:
     """Create a reusable item template and return its generated template ID."""
     _require_manager(user_id, username, password_hash)
@@ -172,7 +172,7 @@ def createItemFromTemplate(
     template_id: str,
     name: str | None = None,
     description: str | None = None,
-    stat_bonus: dict[str, int] | None = None,
+    stat_bonus: dict[str, int | float] | None = None,
 ) -> str:
     """Create an item from a template; given fields override the template values."""
     _require_manager(user_id, username, password_hash)

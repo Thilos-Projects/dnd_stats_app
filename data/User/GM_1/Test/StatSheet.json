@@ -1603,11 +1603,6 @@
       "slot": "string, z.B. 'Ring 1'"
     },
     "rows": [
-      {
-        "ID": "Item_1",
-        "slot_group": "Hand Links",
-        "slot": "Gehalten"
-      }
     ]
   },
   "learned_abilities": {
@@ -1615,9 +1610,6 @@
       "learned_id": "string, Referenz auf einen globalen Lerneintrag (Global/Learned)"
     },
     "rows": [
-      {
-        "ID": "Skill_Demo"
-      }
     ]
   },
   "active_spell_effects": {
