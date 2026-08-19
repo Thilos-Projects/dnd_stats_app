@@ -1,8 +1,18 @@
 {
-    "next_id": 3,
+    "next_id": 5,
     "User_GM_1": {
         "username": "GM",
         "password_hash": "GM",
         "role": "gm"
+    },
+    "User_Gregor_3": {
+        "username": "Gregor",
+        "password_hash": "34958tdfkgw45",
+        "role": "player"
+    },
+    "User_Matthew_4": {
+        "username": "Matthew",
+        "password_hash": "oe93b5od944n",
+        "role": "player"
     }
 }

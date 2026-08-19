@@ -1602,15 +1602,13 @@
       "slot_group": "string, z.B. 'Hand Links'",
       "slot": "string, z.B. 'Ring 1'"
     },
-    "rows": [
-    ]
+    "rows": []
   },
   "learned_abilities": {
     "row_schema": {
       "learned_id": "string, Referenz auf einen globalen Lerneintrag (Global/Learned)"
     },
-    "rows": [
-    ]
+    "rows": []
   },
   "active_spell_effects": {
     "row_schema": {
