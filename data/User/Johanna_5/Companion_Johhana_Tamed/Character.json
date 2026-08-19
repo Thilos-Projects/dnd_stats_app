@@ -1,0 +1,17 @@
+{
+  "ID": "Charakter_Companion_Johhana_Tamed",
+  "display_name": "Olaf(Weiße Eule)",
+  "known_Charakters": [
+    "Charakter_Player_Johanna_Main"
+  ],
+  "known_Skills": [
+    "Skill_291",
+    "Skill_292",
+    "Skill_293",
+    "Skill_294",
+    "Skill_299",
+    "Skill_300"
+  ],
+  "known_SpellEffects": [],
+  "known_StatusEffects": []
+}

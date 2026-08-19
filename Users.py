@@ -4,7 +4,7 @@ from pathlib import Path
 import json
 
 # TODO: Move the admin credential out of source code when deployment configuration exists.
-AdminPassword : str = "1234"
+AdminPassword : str = "MegaAdminPassword1234"
 ALLOWED_ROLES = {"gm", "player"}
 
 

@@ -1,0 +1,35 @@
+{
+  "ID": "Charakter_Player_Johanna_Main",
+  "display_name": "Hildegard",
+  "known_Charakters": [
+    "Charakter_Companion_Johhana_Tamed"
+  ],
+  "known_Skills": [
+    "Skill_39",
+    "Skill_41",
+    "Skill_42",
+    "Skill_75",
+    "Skill_77",
+    "Skill_112",
+    "Skill_113",
+    "Skill_115",
+    "Skill_157",
+    "Skill_158",
+    "Skill_159",
+    "Skill_160",
+    "Skill_283",
+    "Skill_284",
+    "Skill_285",
+    "Skill_286",
+    "Skill_287",
+    "Skill_288",
+    "Skill_289",
+    "Skill_290",
+    "Skill_295",
+    "Skill_296",
+    "Skill_297",
+    "Skill_298"
+  ],
+  "known_SpellEffects": [],
+  "known_StatusEffects": []
+}

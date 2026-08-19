@@ -1,8 +1,8 @@
 {
-    "next_id": 5,
+    "next_id": 7,
     "User_GM_1": {
         "username": "GM",
-        "password_hash": "GM",
+        "password_hash": "GMPass",
         "role": "gm"
     },
     "User_Gregor_3": {
@@ -13,6 +13,16 @@
     "User_Matthew_4": {
         "username": "Matthew",
         "password_hash": "oe93b5od944n",
+        "role": "player"
+    },
+    "User_Johanna_5": {
+        "username": "Johanna",
+        "password_hash": "fi395n27fnw4",
+        "role": "player"
+    },
+    "User_Lionel_6": {
+        "username": "Lionel",
+        "password_hash": "45bdi23fi9",
         "role": "player"
     }
 }
